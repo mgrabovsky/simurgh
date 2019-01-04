@@ -187,9 +187,11 @@ instance Show TEnv where
                             [] freeVars
              in "bound:\n" ++ (unlines bvars) ++ "\nfree:\n" ++ (unlines fvars)
 
+instance Semigroup TEnv where
+    (TEnv b1 f1) <> (TEnv b2 f2) = TEnv (b1 ++ b2) (f1 `M.union` f2)
+
 instance Monoid TEnv where
-        mempty = TEnv [] M.empty
-        mappend (TEnv b1 f1) (TEnv b2 f2) = TEnv (b1 ++ b2) (f1 `M.union` f2)
+    mempty = TEnv [] M.empty
 
 type Typing m = ExceptT String (ReaderT TEnv m)
 
