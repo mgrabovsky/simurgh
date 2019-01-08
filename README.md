@@ -14,3 +14,10 @@ Also inspired by
 -   Mörtberg et al.'s [implementation of Cubical Type Theory](https://github.com/mortberg/cubicaltt)
 -   Bauer at al.'s [Andromeda](https://andromedans.github.io/andromeda/)
 
+## Wishlist
+
+- [ ] Modern pretty-printing
+- [ ] Lenses
+- [ ] Modern library for binders
+- [ ] Tests
+
