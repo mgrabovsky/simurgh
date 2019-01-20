@@ -1,4 +1,20 @@
-Based on
+This might be a moderately simple dependently typed thing one day. It is no more than
+a skeleton as of January 2019.
+
+## Roadmap/Wishlist
+
+- [x] Modern library for binding syntax – [Unbound](https://hackage.haskell.org/package/unbound-generics)
+- [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
+  [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
+  or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
+- [ ] Tests
+- [ ] Improve parsing and error reporting. Look into
+  [Trifecta](https://hackage.haskell.org/package/trifecta)
+- [ ] See if lenses can be used anywhere
+
+## References
+
+Learning resources, hints, etc.:
 
 -   Löh, A\., McBride, C., Swierstra, W.: [_Simply Easy! An Implementation of a Dependently Typed Lambda Calculus_](http://strictlypositive.org/Easy.pdf)
 -   Altenkirch, T\., Danielsson, N. A., Löh, A., Oury, N.: [_ΠΣ: Dependent Types without the Sugar_](http://www.cs.nott.ac.uk/~psztxa/publ/pisigma-new.pdf)
@@ -13,15 +29,4 @@ Also inspired by
 -   Stephanie Weirich's [pi-forall](https://github.com/sweirich/pi-forall)
 -   Mörtberg et al.'s [implementation of Cubical Type Theory](https://github.com/mortberg/cubicaltt)
 -   Bauer at al.'s [Andromeda](https://andromedans.github.io/andromeda/)
-
-## Roadmap/Wishlist
-
-- [x] Modern library for binding syntax – [Unbound](https://hackage.haskell.org/package/unbound-generics)
-- [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
-  [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
-  or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
-- [ ] Tests
-- [ ] Improve parsing and error reporting. Look into
-  [Trifecta](https://hackage.haskell.org/package/trifecta)
-- [ ] See if lenses can be used anywhere
 
