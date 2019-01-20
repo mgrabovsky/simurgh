@@ -14,10 +14,14 @@ Also inspired by
 -   Mörtberg et al.'s [implementation of Cubical Type Theory](https://github.com/mortberg/cubicaltt)
 -   Bauer at al.'s [Andromeda](https://andromedans.github.io/andromeda/)
 
-## Wishlist
+## Roadmap/Wishlist
 
-- [ ] Modern pretty-printing
-- [ ] Lenses
-- [ ] Modern library for binders
+- [x] Modern library for binding syntax – [Unbound](https://hackage.haskell.org/package/unbound-generics)
+- [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
+  [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
+  or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
 - [ ] Tests
+- [ ] Improve parsing and error reporting. Look into
+  [Trifecta](https://hackage.haskell.org/package/trifecta)
+- [ ] See if lenses can be used anywhere
 

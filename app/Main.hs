@@ -1,21 +1,21 @@
 module Main where
 
-import Control.Monad.IO.Class (liftIO)
+import Control.Monad.IO.Class   (liftIO)
+import Data.Foldable            (traverse_)
 import System.Console.Haskeline
 import System.Exit
 
-import           Lambda
-import qualified Parser
-
 data Command = Help
              | Quit
-             | Type String
-             | Eval String
+             | Type    String
+             | Eval    String
+             | Unknown String
 
-parse ":q"  = Quit
-parse ":h"  = Help
-parse (':':'t':' ':input) = Type input
-parse input = Eval input
+parseCommand ":q"                = Quit
+parseCommand ":h"                = Help
+parseCommand (':':'t':' ':input) = Type input
+parseCommand (':':cmd)           = Unknown cmd
+parseCommand input               = Eval input
 
 evaluate Quit = liftIO exitSuccess
 evaluate Help = outputStrLn (
@@ -23,26 +23,21 @@ evaluate Help = outputStrLn (
     "  :h    Print this help message\n" <>
     "  :q    Quit the REPL\n" <>
     "  :t    Infer the type of a term")
-evaluate (Type input) =
-    case Parser.parse "<stdin>" input of
-      Left  e -> outputStrLn ("Parsing error: " ++ show e)
-      Right t ->
-          case inferType t of
-            Left  e  -> outputStrLn ("Typing error: " ++ e)
-            Right ty -> outputStrLn (show ty)
+evaluate (Eval input) = outputStrLn "Type inference not yet implemented."
 evaluate (Eval input) = outputStrLn "Term normalization not yet implemented."
+evaluate (Unknown cmd) = outputStrLn $ "Error: Unknown command '" <> cmd <> "'"
 
 motd =
-    "/////////////////////////////////\n" <>
-    " Hello! Welcome to Simurgh REPL. \n" <>
-    "/////////////////////////////////\n"
+    "╒══════════════════════════════════╕\n" <>
+    "│  Hello! Welcome to Simurgh REPL. │\n" <>
+    "╘══════════════════════════════════╛\n"
 
 repl = do
     line <- getInputLine "> "
     case line of
       Nothing    -> pure ()
       Just input ->
-          evaluate (parse input) >> repl
+          evaluate (parseCommand input) >> repl
 
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn motd >> repl)

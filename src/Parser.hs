@@ -1,133 +1,60 @@
 module Parser where
 
-import Control.Monad.Reader
-import Data.Functor (($>))
-import Data.List (elemIndex)
-import Prelude hiding (const, pi)
-import Text.Parsec hiding (parse)
-import Text.Parsec.Language (LanguageDef)
-import qualified Text.Parsec.Token as P
+import           Prelude              hiding (pi)
 
-import Lambda
+import           Control.Applicative  ((<|>))
+import           Data.Functor         (($>))
+import           Text.Parsec          hiding ((<|>), Empty)
+import           Text.Parsec.Language (emptyDef)
+import qualified Text.Parsec.Token    as P
 
-type Parser = ParsecT String () (Reader [Id])
+import Syntax
+import Eval
 
--- Built-in constants
-const = choice [ reserved "Set"   $> TySet
-               , reserved "empty" $> TyEmpty
-               , reserved "unit"  $> TyUnit
-               , reserved "bool"  $> TyBool
-               , reserved "tt"    $> TmUnit
-               , reserved "true"  $> TmTrue
-               , reserved "false" $> TmFalse
-               ]
-    <?> "constant"
+-- TODO: Parse modules, imports, declarations, etc.
 
--- Eliminators for Booleasn and the empty type
--- TODO: Implement the 'as .. return ...' syntax for proper dependent elimination
-elim = Ite <$> (reserved "if" >> naked) <*> (reservedOp "/" >> naked) <*>
-                (reserved "then" >> naked) <*> (reserved "else" >> naked)
-   <|> IteL <$> (reserved "If" >> naked) <*> (reserved "Then" >> naked) <*>
-               (reserved "Else" >> naked)
-   <|> ExFalso <$> (reserved "exfalso" >> naked) <*> (reservedOp "!" >> naked)
+-- | A parser for the new Unbound-based core syntax representation.
 
+-- | Lexer definition
+simurghDef = emptyDef
+    { P.commentStart    = "{-"
+    , P.commentEnd      = "-}"
+    , P.commentLine     = "--"
+    , P.nestedComments  = True
+    , P.reservedNames   = ["forall", "fun"]
+    , P.reservedOpNames = ["=>"]
+    }
 
-nonApp = const
-    <|> parens expr
-    <|> makeVar =<< identifier
-    where
-        makeVar :: Id -> Parser Term
-        makeVar x = do
-            vars <- ask
-            case elemIndex x vars of
-                Just n -> pure (BVar (fromIntegral n))
-                _      -> pure (FVar x)
+lexer      = P.makeTokenParser simurghDef
+colon      = P.colon lexer
+ident      = P.identifier lexer
+parens     = P.parens lexer
+reserved   = P.reserved lexer
+whiteSpace = P.whiteSpace lexer
 
-naked = chainl1 nonApp (spaces >> pure App)
+arrow = P.reservedOp lexer "=>"
 
--- Type annotations (for use in binders etc.)
-annotated = (,) <$> identifier <*> (colon >> naked)
+expr = do
+    applicand <- atom
+    args      <- many atom
+    if null args
+       then pure applicand
+       else pure (App applicand args)
 
-lambda = reserved "fun" >> (plain <|> poly)
-    where
-        plain = do
-            (ident, ty) <- annotated
-            reservedOp "=>"
-            body <- local (ident :) expr
-            pure (Lam ty body)
-        poly = do
-            (ident, ty) <- parens annotated
-            (idents, tys) <- unzip <$> local (ident :) binders
-            reservedOp "=>"
-            body <- local (\x -> foldl (flip (:)) x (ident:idents)) expr
-            pure (foldr Lam body (ty:tys))
+atom = parens expr
+    <|> reserved "Set" $> Set0
+    <|> mkVar <$> ident
+    <|> mkLam <$> (reserved "fun" *> binders <* arrow)
+        <*> expr
+    <|> mkPi <$> (reserved "forall" *> binders <* arrow)
+        <*> expr
 
-binders = do
-    opt <- optionMaybe $ parens annotated
-    case opt of
-        Just (ident, ty) -> do
-            xs <- local (ident :) binders
-            pure ((ident, ty):xs)
-        _ -> pure []
+binders = many1 binder
 
-prase' :: Parser a -> String -> Either ParseError a
-prase' p s = runReader (runParserT p () "<stdin>" s) []
+binder = parens ((,) <$> ident <*> (colon *> expr))
 
-binder kw sep ctor = do
-        reserved kw
-        (ident, ty) <- annotated
-        reservedOp sep
-        body <- local (ident :) expr
-        pure (ctor ty body)
+parseExpr = parse (whiteSpace *> expr) "<stdin>"
 
-pi = reserved "forall" >> (plain <|> poly)
-    where
-        plain = do
-            (ident, ty) <- annotated
-            reservedOp ","
-            body <- local (ident :) expr
-            pure (Pi ty body)
-        poly = do
-            (ident, ty) <- parens annotated
-            (idents, tys) <- unzip <$> local (ident :) binders
-            reservedOp ","
-            body <- local (\x -> foldl (flip (:)) x (ident:idents)) expr
-            pure (foldr Pi body (ty:tys))
-
-
-expr :: Parser Term
-expr = lambda
-   <|> pi
-   <|> elim
-   <|> naked
-
-parse filePath input = runReader (runParserT (skipMany space *> expr <* eof) () filePath input) []
-
-{-
- - The lexer
- -}
-simurghDef = P.LanguageDef
-           { P.commentStart    = ""
-           , P.commentEnd      = ""
-           , P.commentLine     = ""
-           , P.nestedComments  = True
-           , P.identStart      = letter <|> char '_'
-           , P.identLetter     = alphaNum <|> oneOf "_'"
-           , P.opStart         = P.opLetter simurghDef
-           , P.opLetter        = oneOf ":!#$%&*+./<=>?@\\^|-~"
-           , P.reservedNames   = ["fun", "forall", "Set", "empty", "unit", "bool",
-                                  "tt", "true", "false", "if", "then", "else",
-                                  "If", "Then", "Else", "exfalso"]
-           , P.reservedOpNames = [":", "=>", "!", "/"]
-           , P.caseSensitive   = True
-           }
-
-
-lexer = P.makeTokenParser simurghDef
-
-colon = P.colon lexer
-identifier = P.identifier lexer
-parens = P.parens lexer
-reserved = P.reserved lexer
-reservedOp = P.reservedOp lexer
+runExpr :: String -> Either ParseError Expr
+runExpr input = eval <$> parseExpr input
 
