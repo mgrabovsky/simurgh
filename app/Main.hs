@@ -14,24 +14,7 @@ import Simurgh.Pretty (prettyPrint)
 import Simurgh.Typing (runTyping)
 import Simurgh.Eval   (eval)
 
-import Parser (replExpr)
-
-data Command = Help
-             | Type    String
-             | Eval    String
-             | Unknown String
-             | Quit
-
--- TODO: Implement a proper parser for the REPL commands.
-
-getCommand ("q", _)        = Quit
-getCommand ("quit", _)     = Quit
-getCommand ("?", _)        = Help
-getCommand ("h", _)        = Help
-getCommand ("help", _)     = Help
-getCommand ("t", input)    = Type input
-getCommand ("type", input) = Type input
-getCommand (cmd, _)        = Unknown cmd
+import Parser (Command(..), parseCommand)
 
 evaluate Help          = outputStrLn (
     "Available commands:\n" <>
@@ -40,14 +23,14 @@ evaluate Help          = outputStrLn (
     "    :t/type <expr>    Infer the type of a term")
 evaluate (Type input)  =
     case parseExpr input of
-        Left (show -> error) -> outputStrLn $ "Parse error: " <> error
+        Left (show -> err) -> outputStrLn $ "Parse error: " <> err
         Right expr ->
             case runTyping expr of
-                Left error -> outputStrLn $ "Typing error: " <> error
+                Left err -> outputStrLn $ "Typing error: " <> err
                 Right ty   -> outputStrLn (prettyPrint ty)
 evaluate (Eval input)  =
     case parseExpr input of
-        Left (show -> error) -> outputStrLn $ "Parse error: " <> error
+        Left (show -> err) -> outputStrLn $ "Parse error: " <> err
         Right expr -> outputStrLn (prettyPrint (eval expr))
 evaluate (Unknown cmd) = outputStrLn $ "Error: Unknown command '" <> cmd <> "'"
 evaluate Quit          = liftIO exitSuccess
@@ -61,10 +44,11 @@ repl = do
     line <- getInputLine "> "
     case line of
       Nothing    -> pure ()
-      Just input ->
-          case parse replExpr "<stdin>" input of
-              Left _ -> evaluate (Eval input) >> repl
-              Right (getCommand -> cmd) -> evaluate cmd >> repl
+      Just input -> do
+          case parseCommand input of
+              Left (show -> err) -> outputStrLn err
+              Right cmd -> evaluate cmd
+          repl
 
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn motd >> repl)
