@@ -6,12 +6,15 @@ import Control.Monad.IO.Class   (liftIO)
 import Data.Foldable            (traverse_)
 import System.Console.Haskeline
 import System.Exit
+import Text.Parsec              (parse)
 
 import Simurgh.Syntax
 import Simurgh.Parser (parseExpr)
 import Simurgh.Pretty (prettyPrint)
 import Simurgh.Typing (runTyping)
 import Simurgh.Eval   (eval)
+
+import Parser (replExpr)
 
 data Command = Help
              | Type    String
@@ -21,17 +24,20 @@ data Command = Help
 
 -- TODO: Implement a proper parser for the REPL commands.
 
-parseCommand ":q"                = Quit
-parseCommand ":h"                = Help
-parseCommand (':':'t':' ':input) = Type input
-parseCommand (':':cmd)           = Unknown cmd
-parseCommand input               = Eval input
+getCommand ("q", _)        = Quit
+getCommand ("quit", _)     = Quit
+getCommand ("?", _)        = Help
+getCommand ("h", _)        = Help
+getCommand ("help", _)     = Help
+getCommand ("t", input)    = Type input
+getCommand ("type", input) = Type input
+getCommand (cmd, _)        = Unknown cmd
 
 evaluate Help          = outputStrLn (
     "Available commands:\n" <>
-    "  :h    Print this help message\n" <>
-    "  :q    Quit the REPL\n" <>
-    "  :t    Infer the type of a term")
+    "    :?/h/help         Print this help message\n" <>
+    "    :q/quit           Quit the REPL\n" <>
+    "    :t/type <expr>    Infer the type of a term")
 evaluate (Type input)  =
     case parseExpr input of
         Left (show -> error) -> outputStrLn $ "Parse error: " <> error
@@ -56,7 +62,9 @@ repl = do
     case line of
       Nothing    -> pure ()
       Just input ->
-          evaluate (parseCommand input) >> repl
+          case parse replExpr "<stdin>" input of
+              Left _ -> evaluate (Eval input) >> repl
+              Right (getCommand -> cmd) -> evaluate cmd >> repl
 
 main :: IO ()
 main = runInputT defaultSettings (outputStrLn motd >> repl)
