@@ -15,7 +15,8 @@ cabal-version:       >= 1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Eval, Parser, Pretty, Syntax, Typing
+  exposed-modules:     Simurgh.Eval, Simurgh.Parser, Simurgh.Pretty,
+                       Simurgh.Syntax, Simurgh.Typing
   default-extensions:  ViewPatterns
   ghc-options:         -Wall
   build-depends:       base             >= 4.7     && < 5

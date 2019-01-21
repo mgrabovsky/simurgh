@@ -7,11 +7,11 @@ import Data.Foldable            (traverse_)
 import System.Console.Haskeline
 import System.Exit
 
-import Syntax
-import Parser (parseExpr)
-import Pretty (prettyPrint)
-import Typing (runTyping)
-import Eval   (eval)
+import Simurgh.Syntax
+import Simurgh.Parser (parseExpr)
+import Simurgh.Pretty (prettyPrint)
+import Simurgh.Typing (runTyping)
+import Simurgh.Eval   (eval)
 
 data Command = Help
              | Type    String
