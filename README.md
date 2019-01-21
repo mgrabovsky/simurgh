@@ -14,6 +14,7 @@ of type `Set`.
   [Trifecta](https://hackage.haskell.org/package/trifecta)
 - [ ] See if lenses can be leveraged anywhere
 - [ ] Pattern matching
+- [ ] \(Mutually) inductive data types
 - [ ] Module system, global definitions, `let`s
 - [ ] Play around with equality (intensional/extensional/observational)
 - [ ] Type universe hierarchy; subtyping
