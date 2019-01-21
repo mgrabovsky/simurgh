@@ -1,4 +1,4 @@
-module Pretty
+module Simurgh.Pretty
     ( prettyPrint
     ) where
 
@@ -11,7 +11,7 @@ import           Text.PrettyPrint     ((<+>), Doc)
 import           Unbound.Generics.LocallyNameless
 import           Unbound.Generics.LocallyNameless.Internal.Fold (toListOf)
 
-import Syntax
+import Simurgh.Syntax
 
 -- | Pretty printing for the new core syntax.
 

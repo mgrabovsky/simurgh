@@ -6,7 +6,7 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Syntax where
+module Simurgh.Syntax where
 
 import Data.Monoid
 

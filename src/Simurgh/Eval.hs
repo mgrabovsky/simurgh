@@ -1,4 +1,4 @@
-module Eval
+module Simurgh.Eval
     ( eval
     ) where
 
@@ -8,7 +8,7 @@ import Control.Monad.Trans.Maybe (MaybeT, runMaybeT)
 
 import Unbound.Generics.LocallyNameless
 
-import Syntax
+import Simurgh.Syntax
 
 -- Evaluator for our toy untyped lambda calculus.
 -- Based on a small-step, call-by-value operational semantics.

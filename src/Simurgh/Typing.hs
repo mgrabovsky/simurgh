@@ -1,4 +1,4 @@
-module Typing
+module Simurgh.Typing
     ( runTyping
     ) where
 
@@ -6,8 +6,8 @@ import Control.Monad.Trans.Except (ExceptT, runExceptT, throwE)
 
 import Unbound.Generics.LocallyNameless
 
-import Eval
-import Syntax
+import Simurgh.Eval
+import Simurgh.Syntax
 
 (~=) :: Expr -> Expr -> FreshM Bool
 e1 ~= e2

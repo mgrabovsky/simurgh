@@ -1,4 +1,4 @@
-module Parser
+module Simurgh.Parser
     ( parseExpr
     ) where
 
@@ -10,7 +10,7 @@ import           Text.Parsec          hiding ((<|>), Empty)
 import           Text.Parsec.Language (emptyDef)
 import qualified Text.Parsec.Token    as P
 
-import Syntax
+import Simurgh.Syntax
 
 -- TODO: Parse modules, imports, declarations, etc.
 
