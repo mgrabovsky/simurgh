@@ -1,5 +1,7 @@
 This might be a moderately simple dependently typed thing one day. It is no more than
-a skeleton as of January 2019.
+a skeleton as of January 2019. Currently, there is an absolutely minimal core
+dependently typed lambda calculus with lambda terms, Pi types and a single type `Set`
+of type `Set`.
 
 ## Roadmap/Wishlist
 
@@ -10,7 +12,16 @@ a skeleton as of January 2019.
 - [ ] Tests
 - [ ] Improve parsing and error reporting. Look into
   [Trifecta](https://hackage.haskell.org/package/trifecta)
-- [ ] See if lenses can be used anywhere
+- [ ] See if lenses can be leveraged anywhere
+- [ ] Pattern matching
+- [ ] Module system, global definitions, `let`s
+- [ ] Play around with equality (intensional/extensional/observational)
+- [ ] Type universe hierarchy; subtyping
+- [ ] Recursive functions, fixpoints
+- [ ] Implicit arguments; elaboration à la Lean
+- [ ] More sophisticated syntax as part of higher-level languages which transform
+  into the low-level core language
+- [ ] First-class support for monads or algebraic effects
 
 ## References
 
