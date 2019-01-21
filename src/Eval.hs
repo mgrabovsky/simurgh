@@ -1,4 +1,6 @@
-module Eval where
+module Eval
+    ( eval
+    ) where
 
 import Control.Applicative       ((<|>))
 import Control.Monad
@@ -13,25 +15,6 @@ import Syntax
 
 done :: MonadPlus m => m a
 done = mzero
-
-domain :: Telescope -> [Name Expr]
-domain Empty                               = []
-domain (Cons (unrebind -> ((x, _), rest))) = x : domain rest
-
-lengthTele :: Telescope -> Int
-lengthTele Empty                          = 0
-lengthTele (Cons (unrebind -> (_, rest))) = succ (lengthTele rest)
-
-takeTele :: Int -> Telescope -> Telescope
-takeTele 0 _                              = Empty
-takeTele _ Empty                          = Empty
-takeTele n (Cons (unrebind -> (b, rest))) =
-    Cons (rebind b (takeTele (pred n) rest))
-
-dropTele :: Int -> Telescope -> Telescope
-dropTele 0 tele                           = tele
-dropTele _ Empty                          = Empty
-dropTele n (Cons (unrebind -> (b, rest))) = dropTele (pred n) rest
 
 -- | Try to perform a single step of evaluation
 step :: Expr -> MaybeT FreshM Expr

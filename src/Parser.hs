@@ -1,4 +1,6 @@
-module Parser where
+module Parser
+    ( parseExpr
+    ) where
 
 import           Prelude              hiding (pi)
 
@@ -9,7 +11,6 @@ import           Text.Parsec.Language (emptyDef)
 import qualified Text.Parsec.Token    as P
 
 import Syntax
-import Eval
 
 -- TODO: Parse modules, imports, declarations, etc.
 
@@ -53,8 +54,6 @@ binders = many1 binder
 
 binder = parens ((,) <$> ident <*> (colon *> expr))
 
+parseExpr :: String -> Either ParseError Expr
 parseExpr = parse (whiteSpace *> expr) "<stdin>"
-
-runExpr :: String -> Either ParseError Expr
-runExpr input = eval <$> parseExpr input
 

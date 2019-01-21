@@ -1,4 +1,6 @@
-module Pretty where
+module Pretty
+    ( prettyPrint
+    ) where
 
 import qualified Data.Set             as S
 import           Data.Set             (Set)

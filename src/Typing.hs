@@ -1,4 +1,6 @@
-module Typing where
+module Typing
+    ( runTyping
+    ) where
 
 import Control.Monad.Trans.Except (ExceptT, runExceptT, throwE)
 

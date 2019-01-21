@@ -8,9 +8,6 @@
 
 module Syntax where
 
-import Control.Monad
-import Control.Monad.Trans.Maybe  (MaybeT, runMaybeT)
-import Control.Monad.Trans.Except (ExceptT, runExceptT, throwE)
 import Data.Monoid
 
 import Data.Typeable (Typeable)
@@ -19,7 +16,7 @@ import Prelude       hiding (pi)
 
 import Unbound.Generics.LocallyNameless
 
--- TODO: Syntax for modules, imports, etc.
+-- TODO: Syntax for modules, imports, data types, etc.
 
 -- | The type of expressions (terms) of our core lambda calculus.
 data Expr = Var  (Name Expr)
@@ -40,6 +37,7 @@ data Telescope = Empty
                | Cons (Rebind (Name Expr, Embed Expr) Telescope)
                deriving (Generic, Show, Typeable)
 
+toList :: Telescope -> [(Name Expr, Embed Expr)]
 toList Empty                          = []
 toList (Cons (unrebind -> (p, rest))) = p : toList rest
 
@@ -58,6 +56,27 @@ instance Subst Expr Expr where
     isvar _       = Nothing
 
 instance Subst Expr Telescope
+
+-- Functions for working with telescopes.
+-- TODO: Break out into a separate module.
+domain :: Telescope -> [Name Expr]
+domain Empty                               = []
+domain (Cons (unrebind -> ((x, _), rest))) = x : domain rest
+
+lengthTele :: Telescope -> Int
+lengthTele Empty                          = 0
+lengthTele (Cons (unrebind -> (_, rest))) = succ (lengthTele rest)
+
+takeTele :: Int -> Telescope -> Telescope
+takeTele 0 _                              = Empty
+takeTele _ Empty                          = Empty
+takeTele n (Cons (unrebind -> (b, rest))) =
+    Cons (rebind b (takeTele (pred n) rest))
+
+dropTele :: Int -> Telescope -> Telescope
+dropTele 0 tele                           = tele
+dropTele _ Empty                          = Empty
+dropTele n (Cons (unrebind -> (_, rest))) = dropTele (pred n) rest
 
 -- Convenient helper functions.
 
