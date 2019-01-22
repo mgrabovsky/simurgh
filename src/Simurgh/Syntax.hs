@@ -6,7 +6,18 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
-module Simurgh.Syntax where
+module Simurgh.Syntax
+    ( Expr(..)
+    , Telescope(..)
+    , aeq
+    , domain
+    , dropTele
+    , mkApp
+    , mkLam
+    , mkPi
+    , mkTelescope
+    , mkVar
+    ) where
 
 import Data.Monoid
 
@@ -36,10 +47,6 @@ data Expr = Var  (Name Expr)
 data Telescope = Empty
                | Cons (Rebind (Name Expr, Embed Expr) Telescope)
                deriving (Generic, Show, Typeable)
-
-toList :: Telescope -> [(Name Expr, Embed Expr)]
-toList Empty                          = []
-toList (Cons (unrebind -> (p, rest))) = p : toList rest
 
 instance Semigroup Telescope where
   Empty                       <> t2 = t2

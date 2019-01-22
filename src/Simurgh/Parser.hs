@@ -42,13 +42,13 @@ expr = do
        then pure applicand
        else pure (App applicand args)
 
-atom = parens expr
+atom =  parens expr
     <|> reserved "Set" $> Set0
     <|> mkVar <$> ident
     <|> mkLam <$> (reserved "fun" *> binders <* arrow)
-        <*> expr
+              <*> expr
     <|> mkPi <$> (reserved "forall" *> binders <* arrow)
-        <*> expr
+             <*> expr
 
 binders = many1 binder
 
