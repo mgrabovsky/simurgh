@@ -51,5 +51,6 @@ repl = do
           repl
 
 main :: IO ()
-main = runInputT defaultSettings (outputStrLn motd >> repl)
+main = runInputT settings (outputStrLn motd >> repl)
+  where settings = (defaultSettings :: Settings IO) { complete = noCompletion }
 
