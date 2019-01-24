@@ -22,8 +22,8 @@ simurghDef = emptyDef
     , P.commentEnd      = "-}"
     , P.commentLine     = "--"
     , P.nestedComments  = True
-    , P.reservedNames   = ["forall", "fun"]
-    , P.reservedOpNames = ["=>"]
+    , P.reservedNames   = ["forall", "fun", "in", "let"]
+    , P.reservedOpNames = ["->", "=>", "="]
     }
 
 lexer      = P.makeTokenParser simurghDef
@@ -31,9 +31,10 @@ colon      = P.colon lexer
 ident      = P.identifier lexer
 parens     = P.parens lexer
 reserved   = P.reserved lexer
+reservedOp = P.reservedOp lexer
 whiteSpace = P.whiteSpace lexer
 
-arrow = P.reservedOp lexer "=>"
+arrow = reservedOp "=>"
 
 expr = do
     applicand <- atom
@@ -49,6 +50,9 @@ atom =  parens expr
               <*> expr
     <|> mkPi <$> (reserved "forall" *> binders <* arrow)
              <*> expr
+    <|> mkLet <$> (reserved "let" *> ident)
+              <*> (reservedOp "=" *> expr)
+              <*> (reserved "in" *> expr)
 
 binders = many1 binder
 

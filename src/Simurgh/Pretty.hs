@@ -32,6 +32,9 @@ instance Pretty Expr where
   pprint (Pi b)     = lunbind b $ \(tele, t) -> do
       prettyTele <- pprint tele
       ((PP.text "Π" <+> prettyTele <+> PP.text "=>" <+>) <$> pprint t)
+  pprint (Let b)    = lunbind b $ \((x, unembed -> t), u) -> do
+      let prefix = PP.text "let" <+> PP.text (show x) <+> PP.text "="
+      ((\t u -> prefix <+> t <+> PP.text "in" <+> u) <$> pprint t <*> pprint u)
   pprint Set0        = pure (PP.text "Set")
 
 instance Pretty Telescope where

@@ -32,6 +32,9 @@ red (Lam b) = do
     (tele, e) <- unbind b
     e' <- red e
     pure $ Lam (bind tele e')
+red (Let b) = do
+    ((x, unembed -> t), body) <- unbind b
+    red $ subst x t body
 red e = pure e
 
 type TypingM = ExceptT String LFreshM
@@ -62,6 +65,9 @@ infer g (App left rights) = do
 infer g (Pi b) = lunbind b $ \(delta, bty) -> do
     check (g <> delta) bty Set0
     pure Set0
+infer g (Let b) = lunbind b $ \((x, unembed -> t), body) -> do
+    xty <- infer g t
+    infer (Cons (rebind (x, embed xty) g)) body
 
 checkList :: Telescope -> [Expr] -> Telescope -> TypingM ()
 checkList _ []        Empty    = pure ()

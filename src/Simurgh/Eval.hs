@@ -46,6 +46,9 @@ step (App t1 args) =
     -- The following will not reduce in steps, but it will reduce the arguments
     -- at once.
     (App t1 <$> traverse step args)
+step (Let b) = do
+    ((x, unembed -> t), body) <- unbind b
+    pure $ subst x t body
 step _ = done
 
 transitiveClosure :: Monad m => (a -> MaybeT m a) -> (a -> m a)

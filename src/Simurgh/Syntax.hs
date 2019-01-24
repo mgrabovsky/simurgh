@@ -14,6 +14,7 @@ module Simurgh.Syntax
     , dropTele
     , mkApp
     , mkLam
+    , mkLet
     , mkPi
     , mkTelescope
     , mkVar
@@ -40,6 +41,8 @@ data Expr = Var  (Name Expr)
           | Pi   (Bind Telescope Expr)
         -- ^ Pi expressions works similarly to λ expressions, but require the body to
         -- be a type.
+          | Let  (Bind (Name Expr, Embed Expr) Expr)
+        -- ^ Local named bindings -- the familiar `let-in` construct.
           | Set0
         -- ^ The base type which is its own type (for now).
           deriving (Generic, Show, Typeable)
@@ -95,6 +98,9 @@ mkApp t1 t2 = App t1 [t2]
 
 mkLam :: [(String, Expr)] -> Expr -> Expr
 mkLam xs t = Lam (bind (mkTelescope xs) t)
+
+mkLet :: String -> Expr -> Expr -> Expr
+mkLet x t u = Let (bind (string2Name x, Embed t) u)
 
 mkPi :: [(String, Expr)] -> Expr -> Expr
 mkPi xs t = Pi (bind (mkTelescope xs) t)
