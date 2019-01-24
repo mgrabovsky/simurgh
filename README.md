@@ -35,6 +35,7 @@ Learning resources, hints, etc.:
 -   Altenkirch, T\., McBride, C., Swierstra, W.: [_Observational Equality, Now!_](http://www.cs.nott.ac.uk/~psztxa/publ/obseqnow.pdf)
 -   de Moura, L\., Avigad, J., Kong, S., Roux, C.: [_Elaboration in Dependent Type Theory_](http://www.contrib.andrew.cmu.edu/~avigad/Papers/constr.pdf)
 -   de Moura et al\.: [_The Lean Theorem Prover (system description)_](https://leanprover.github.io/papers/system.pdf)
+-   Danny Gratzer: [_Bidirectional Type Checkers for λ→ and λΠ_](https://jozefg.bitbucket.io/posts/2014-11-22-bidir.html)
 
 Also inspired by
 
