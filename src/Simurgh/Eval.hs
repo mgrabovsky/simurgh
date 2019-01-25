@@ -47,7 +47,7 @@ step (App t1 args) =
     -- at once.
     (App t1 <$> traverse step args)
 step (Let b) = do
-    ((x, unembed -> t), body) <- unbind b
+    ((x, Embed t), body) <- unbind b
     pure $ subst x t body
 step _ = done
 

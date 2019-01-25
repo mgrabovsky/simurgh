@@ -65,7 +65,7 @@ infer g (App left rights) = do
 infer g (Pi b) = lunbind b $ \(delta, bty) -> do
     check (g <> delta) bty Set0
     pure Set0
-infer g (Let b) = lunbind b $ \((x, unembed -> t), body) -> do
+infer g (Let b) = lunbind b $ \((x, Embed t), body) -> do
     xty <- infer g t
     infer (Cons (rebind (x, embed xty) g)) body
 
