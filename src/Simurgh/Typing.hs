@@ -9,6 +9,7 @@ import Unbound.Generics.LocallyNameless
 import Simurgh.Eval
 import Simurgh.Syntax
 
+-- | Convertibility of λ terms.
 (~=) :: Expr -> Expr -> FreshM Bool
 e1 ~= e2
   | e1 `aeq` e2 = pure True
@@ -19,6 +20,8 @@ e1 ~= e2
          then pure False
          else e1 ~= e2
 
+-- TODO: Move all evaluation-related functionality into one module.
+-- TODO: Implement CoC conversion rules.
 red :: Expr -> FreshM Expr
 red (App e1 args) = do
     e1'   <- red e1
