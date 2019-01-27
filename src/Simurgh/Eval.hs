@@ -64,6 +64,25 @@ eval :: Expr -> Expr
 eval = runFreshM . transitiveClosure step
 
 -- TODO: Implement reduction to weak head normal form (WHNF).
+-- TODO: Use LFresh instead of Fresh.
+whnf :: Fresh m => Expr -> m Expr
+whnf (App t1 args) = do
+    -- First reduce to applicand.
+    nf1 <- whnf t1
+    case nf1 of
+        -- If the applicand reduces to a lambda, unbind it and substitute the
+        -- arguments.
+        -- TODO: Support partial application.
+        Lam b -> do
+            (domain -> argNames, body) <- unbind b
+            whnf $ substs (zip argNames args) body
+        -- Otherwise only keep the applicand reduced.
+        _ -> pure (App nf1 args)
+whnf (Let b) = do
+    ((x, Embed rhs), body) <- unbind b
+    whnf $ subst x rhs body
+-- TODO: We might want to unfold definitions once we implement contexts.
+whnf t = pure t
 
 -- More arguments than binders.
 ex1 = App (mkLam [("xxx", Set0), ("yyy", Set0), ("fff", mkPi [("_", mkVar "xxx")] (mkVar "yyy")), ("aaa", mkVar "xxx")] (App (mkVar "fff") [mkVar "aaa"]))
