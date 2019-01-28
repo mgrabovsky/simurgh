@@ -29,6 +29,11 @@ import Prelude       hiding (pi)
 import Unbound.Generics.LocallyNameless
 
 -- TODO: Syntax for modules, imports, data types, etc.
+-- TODO: Consider going back to unary binders, as many other things might be
+-- simplified, most significantly partial application and subsequently related parts
+-- of reduction and conversion. In that case, telescopes would only be part of the
+-- higher-level syntax, which would be transformed into this core language in
+-- a "preprocessing" pass.
 
 -- | The type of expressions (terms) of our core lambda calculus.
 data Expr = Var  (Name Expr)
