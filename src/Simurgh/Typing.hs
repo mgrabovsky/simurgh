@@ -14,31 +14,12 @@ import Simurgh.Syntax
 e1 ~= e2
   | e1 `aeq` e2 = pure True
   | otherwise   = do
-      e1' <- red e1
-      e2' <- red e2
+      -- Originally, this was full reduction to the normal form rather than whnf.
+      e1' <- whnf e1
+      e2' <- whnf e2
       if e1' `aeq` e1 && e2' `aeq` e2
          then pure False
          else e1 ~= e2
-
--- TODO: Move all evaluation-related functionality into one module.
--- TODO: Implement CoC conversion rules.
-red :: Expr -> FreshM Expr
-red (App e1 args) = do
-    e1'   <- red e1
-    args' <- traverse red args
-    case e1' of
-        Lam b -> do
-            (domain -> vars, body) <- unbind b
-            pure $ substs (zip vars args') body
-        _ -> pure $ App e1' args'
-red (Lam b) = do
-    (tele, e) <- unbind b
-    e' <- red e
-    pure $ Lam (bind tele e')
-red (Let b) = do
-    ((x, unembed -> t), body) <- unbind b
-    red $ subst x t body
-red e = pure e
 
 type TypingM = ExceptT String LFreshM
 
@@ -92,6 +73,7 @@ check g m a = do
     checkEq b a
 
 -- | A very limited notion of equality.
+-- TODO: Consider convertibility (~=).
 checkEq :: Expr -> Expr -> TypingM ()
 checkEq t1 t2 = if aeq t1 t2
                    then pure ()
@@ -100,66 +82,4 @@ checkEq t1 t2 = if aeq t1 t2
 
 runTyping :: Expr -> Either String Expr
 runTyping = runLFreshM . runExceptT . infer Empty
-
-{- Environment with equality:
-    eq     : forall (A : Set) (x y : A), Set
-    refl   : forall (A : Set) (x : A), eq A x x
-    eq_ind : forall (A : Set) (x : A) (T : A -> Set)
-                    (B : T x) (y : A),
-                    eq A x y -> T y
-
-Environment with the empty type, the unit type and booleans:
-    empty : Set
-    -- TODO: empty_ind, unit_ind, bool_ind
-    unit  : Set
-    tt    : unit
-    bool  : Set
-    true  : bool
-    false : bool
-
-Environment with natural numbers:
-    nat     : Set
-    Z       : nat
-    S       : nat -> nat
-    nat_ind : forall (T : nat -> Set) (TZ : T Z)
-                     (TS : forall (n : nat), T n -> T (S n))
-                     (n : nat), T n
-
-Environment with lists:
-    list : Set -> Set
-    nil  : forall (A : Set), list A
-    cons : forall (A : Set) (head : A) (tail : list A), list A
-
-Environment with vectors:
-    vect  : Set -> nat -> Set
-    vnil  : forall (A : Set), vect A Z
-    vcons : forall (A : Set) (n : nat) (head : A) (tail : vect A n),
-            vect A (S n)
-
-Environment with logical connectives:
-    and  : Set -> Set -> Set
-    conj : forall (P : Set) (Q : Set), P -> Q -> and P Q
-    or   : Set -> Set -> Set
-    orl  : forall (P : Set) (Q : Set), P -> or P Q
-    orr  : forall (P : Set) (Q : Set), Q -> or P Q
-
-Short proofs:
-    -- 0 = 0 /\ 1 = 1
-    conj (eq nat Z Z) (eq nat (S Z) (S Z)) (refl nat Z) (refl nat (S Z))
-    -- true /= false
-    -- TODO: if_then_else |--> bool_ind
-    eq_ind bool true
-        (fun (b : bool) => if b then unit else empty)
-        tt false -- : eq bool true false -> empty
-
-Proof of transitivity of equality:
-    fun (A : Set) (a : A) (b : A) (c : A)
-        (Hab : eq A a b) (Hbc : eq A b c)
-     => eq_ind A b (fun (x : A) => eq A a x) Hab c Hbc
-
-Mildly interesting term for the type checker:
-    fun (A : Set) (B : A -> Set) (x : A) (t : A -> B x) => t x
-Currently infers the expected type:
-    Π (A : Set) (B : Π (_ : A) => Set) (x : A) (t : Π (_ : A) => (B x)) => (B x)
--}
 

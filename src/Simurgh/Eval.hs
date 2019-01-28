@@ -1,5 +1,6 @@
 module Simurgh.Eval
     ( eval
+    , whnf
     ) where
 
 import Control.Applicative       ((<|>))
@@ -63,8 +64,9 @@ transitiveClosure f a = do
 eval :: Expr -> Expr
 eval = runFreshM . transitiveClosure step
 
--- TODO: Implement reduction to weak head normal form (WHNF).
--- TODO: Use LFresh instead of Fresh.
+-- TODO: Implement and comment CoC conversion rules.
+-- TODO: Check this whnf reduction for validity.
+-- TODO: Consider LFresh in place of Fresh. Possibly even a pure interface.
 whnf :: Fresh m => Expr -> m Expr
 whnf (App t1 args) = do
     -- First reduce to applicand.
@@ -83,25 +85,4 @@ whnf (Let b) = do
     whnf $ subst x rhs body
 -- TODO: We might want to unfold definitions once we implement contexts.
 whnf t = pure t
-
--- More arguments than binders.
-ex1 = App (mkLam [("xxx", Set0), ("yyy", Set0), ("fff", mkPi [("_", mkVar "xxx")] (mkVar "yyy")), ("aaa", mkVar "xxx")] (App (mkVar "fff") [mkVar "aaa"]))
-          [mkVar "Nat", mkVar "Unit", mkLam [("_", mkVar "Nat")] (mkVar "tt"), mkVar "3", mkVar "extra", Set0]
-
--- Assertion for this test.
-as1 = eval ex1 `aeq` App (mkVar "tt") [mkVar "extra", Set0]
-
--- As many binders as arguments.
-ex2 = App (mkLam [("xxx", Set0), ("yyy", Set0), ("fff", mkPi [("_", mkVar "xxx")] (mkVar "yyy")), ("aaa", mkVar "xxx")] (App (mkVar "fff") [mkVar "aaa"]))
-          [mkVar "Nat", mkVar "Unit", mkLam [("_", mkVar "Nat")] (mkVar "tt"), mkVar "3"]
-
--- Assertion for this test.
-as2 = eval ex2 `aeq` mkVar "tt"
-
--- More binders than arguments.
-ex3 = App (mkLam [("xxx", Set0), ("yyy", Set0), ("fff", mkPi [("_", mkVar "xxx")] (mkVar "yyy")), ("aaa", mkVar "xxx")] (App (mkVar "fff") [mkVar "aaa"]))
-          [mkVar "Nat", mkVar "Unit"]
-
--- Assertion for this test.
-as3 = eval ex3 `aeq` mkLam [("f", mkPi [("_", mkVar "Nat")] (mkVar "Unit")), ("a", mkVar "Nat")] (App (mkVar "f") [mkVar "a"])
 
