@@ -8,6 +8,9 @@ import Simurgh.Parser
 import Simurgh.Pretty
 import Simurgh.Syntax
 
+-- TODO: Should we consider syntactic equality (==) rather than α-equivalence?
+-- That would require an Eq instance for Expr et al.
+
 main :: IO ()
 main = defaultMain tests
   where tests = testGroup "Simurgh" [evaluatorTests, parserTests]
@@ -20,7 +23,7 @@ evaluatorTests = testGroup "Evaluator"
     , testCase "fewer arguments than binders" $
         testEval fewerArgsTerm fewerArgsResult
     ]
-      where
+    where
         testEval term expected = assertAeq (eval term) expected
         moreArgsTerm = App (mkLam [("xxx", Set0), ("yyy", Set0), ("fff", mkPi [("_", mkVar "xxx")] (mkVar "yyy")), ("aaa", mkVar "xxx")] (App (mkVar "fff") [mkVar "aaa"])) [mkVar "Nat", mkVar "Unit", mkLam [("_", mkVar "Nat")] (mkVar "tt"), mkVar "3", mkVar "extra", Set0]
         moreArgsResult = App (mkVar "tt") [mkVar "extra", Set0]
