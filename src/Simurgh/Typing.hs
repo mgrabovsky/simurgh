@@ -1,8 +1,14 @@
+{-# LANGUAGE DeriveDataTypeable #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE MultiParamTypeClasses #-}
+
 module Simurgh.Typing
     ( runTyping
     ) where
 
 import Control.Monad.Trans.Except (ExceptT, runExceptT, throwE)
+import Data.Typeable              (Typeable)
+import GHC.Generics               (Generic)
 
 import Unbound.Generics.LocallyNameless
 
@@ -23,6 +29,23 @@ e1 ~= e2
 
 type TypingM = ExceptT String LFreshM
 
+data Telescope = Empty
+               | Cons (Rebind (Name Expr, Embed Expr) Telescope)
+               deriving (Generic, Show, Typeable)
+
+instance Semigroup Telescope where
+  Empty                       <> t2 = t2
+  Cons (unrebind -> (p, t1')) <> t2 = Cons (rebind p (t1' <> t2))
+
+instance Monoid Telescope where
+  mempty = Empty
+
+instance Alpha Telescope
+instance Subst Expr Telescope
+
+single :: (Name Expr, Embed Expr) -> Telescope
+single xty = Cons (rebind xty Empty)
+
 lookUp :: Name Expr -> Telescope -> TypingM Expr
 lookUp n Empty = throwE $ "Not in scope: " <> show n
 lookUp v (Cons (unrebind -> ((x, Embed a), t')))
@@ -31,49 +54,35 @@ lookUp v (Cons (unrebind -> ((x, Embed a), t')))
 
 -- Type checker -- bidirectional (uni- for now) type inference.
 
-unPi :: Expr -> TypingM (Bind Telescope Expr)
+unPi :: Expr -> TypingM (Bind (Name Expr, Embed Expr) Expr)
 unPi (Pi b) = pure b
 unPi t      = throwE $ "Unexpected Pi type: " <> show t
 
 infer :: Telescope -> Expr -> TypingM Expr
 infer g (Var x) = lookUp x g
 infer _ Set0    = pure Set0
-infer g (Lam b) = lunbind b $ \(delta, m) -> do
-    bty <- infer (g <> delta) m
-    pure (Pi (bind delta bty))
-infer g (App left rights) = do
-    b <- unPi =<< infer g left
-    lunbind b $ \(delta, bty) -> do
-        checkList g rights delta
-        multiSubst delta rights bty
-infer g (Pi b) = lunbind b $ \(delta, bty) -> do
-    check (g <> delta) bty Set0
+infer g (Lam b) = lunbind b $ \(xty, body) -> do
+    bodyType <- infer (g <> single xty) body
+    pure $ Pi (bind xty bodyType)
+infer g (App applicand argument) = do
+    b <- unPi =<< infer g applicand
+    lunbind b $ \((x, Embed ty), bty) -> do
+        check g argument ty
+        pure $ subst x argument bty
+infer g (Pi b) = lunbind b $ \(xty, body) -> do
+    check (g <> single xty) body Set0
     pure Set0
 infer g (Let b) = lunbind b $ \((x, Embed t), body) -> do
     xty <- infer g t
-    infer (Cons (rebind (x, embed xty) g)) body
-
-checkList :: Telescope -> [Expr] -> Telescope -> TypingM ()
-checkList _ []        Empty    = pure ()
-checkList g (t:rest) (Cons rb) = do
-    let ((x, Embed a), t') = unrebind rb
-    check g t a
-    checkList (subst x t g) (subst x t rest) (subst x t t')
-checkList _ _         _        = throwE "Unequal number of arguments and parameters"
-
-multiSubst :: Telescope -> [Expr] -> Expr -> TypingM Expr
-multiSubst  Empty    []      t = pure t
-multiSubst (Cons rb) (t1:ts) t = multiSubst t1' ts t'
-    where ((x, _), t1') = unrebind rb
-          t'            = subst x t1 t
+    infer (g <> single (x, embed xty)) body
 
 check :: Telescope -> Expr -> Expr -> TypingM ()
 check g m a = do
     b <- infer g m
     checkEq b a
 
--- | A very limited notion of equality.
--- TODO: Consider convertibility (~=).
+-- | A very limited notion of equality of types.
+-- TODO: Consider convertibility (~=) instead.
 checkEq :: Expr -> Expr -> TypingM ()
 checkEq t1 t2 = if aeq t1 t2
                    then pure ()

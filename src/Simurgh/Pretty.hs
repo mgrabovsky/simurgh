@@ -23,26 +23,22 @@ class Pretty p where
 
 instance Pretty Expr where
   pprint (Var x)     = pure (PP.text (show x))
-  pprint (App t1 ts) =
-      let prettyTerms = traverse pprint (t1:ts)
-       in PP.parens <$> (foldr1 (<+>) <$> prettyTerms)
-  pprint (Lam b)     = lunbind b $ \(tele, t) -> do
-      prettyTele <- pprint tele
-      ((PP.text "λ" <+> prettyTele <+> PP.text "=>" <+>) <$> pprint t)
-  pprint (Pi b)     = lunbind b $ \(tele, t) -> do
-      prettyTele <- pprint tele
-      ((PP.text "Π" <+> prettyTele <+> PP.text "=>" <+>) <$> pprint t)
+  pprint (App t1 t2) = (\pt1 pt2 -> PP.parens (pt1 <+> pt2)) <$>
+      pprint t1 <*> pprint t2
+  pprint (Lam b)     = lunbind b $ \((x, Embed ty), body) -> do
+      let argName = PP.text (show x)
+          arr     = PP.text "=>"
+      (\prettyTy prettyBody -> PP.text "λ" <+> PP.parens (argName <+> PP.colon <+> prettyTy)
+                                   <+> arr <+> prettyBody) <$> pprint ty <*> pprint body
+  pprint (Pi b)     = lunbind b $ \((x, Embed ty), body) -> do
+      let argName = PP.text (show x)
+          arr     = PP.text "=>"
+      (\prettyTy prettyBody -> PP.text "Π" <+> PP.parens (argName <+> PP.colon <+> prettyTy)
+                                <+> arr <+> prettyBody) <$> pprint ty <*> pprint body
   pprint (Let b)    = lunbind b $ \((x, Embed t), u) -> do
       let prefix = PP.text "let" <+> PP.text (show x) <+> PP.text "="
       ((\t u -> prefix <+> t <+> PP.text "in" <+> u) <$> pprint t <*> pprint u)
   pprint Set0        = pure (PP.text "Set")
-
-instance Pretty Telescope where
-  pprint Empty = pure PP.empty
-  pprint (Cons (unrebind -> ((x, Embed t), rest))) =
-      let ppVar  = PP.text (show x) <+> PP.colon 
-          ppItem = (ppVar <+>) <$> pprint t
-       in (<+>) <$> (PP.parens <$> ppItem) <*> pprint rest
 
 prettyPrint :: Pretty a => a -> String
 prettyPrint = PP.render . runLFreshM . pprint

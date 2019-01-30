@@ -19,34 +19,18 @@ done = mzero
 
 -- | Try to perform a single step of evaluation
 step :: Expr -> MaybeT FreshM Expr
-step (App (Lam b) args) = do
-    -- Unbind the binder into the telescope and the body where it's bound.
-    (telescope, body) <- unbind b
-    -- 'vars' is the list of names bound by the lambda. It is the "domain" 
-    -- of the associated telescope.
-    let vars  = domain telescope
-        nvars = length vars
-        nargs = length args
-    -- Quite a complicated code in order to support partial application.
-    if nvars < nargs
-       then let argsTaken = take nvars args
-                newBody   = substs (zip vars argsTaken) body
-             in pure $ App newBody (drop nvars args)
-       else if nvars == nargs
-       then -- Simultaneously substitute arguments in place of their corresponding bound
-            -- variables inside the body of the lambda.
-            pure $ substs (zip vars args) body
-       else let varsTaken     = take nargs vars
-                teleRemaining = dropTele nargs telescope
-                newLambda     = Lam (bind teleRemaining body)
-             in pure $ substs (zip varsTaken args) newLambda
-step (App t1 args) =
+step (App (Lam b) argument) = do
+    -- Unbind the binder into the variable+type pair and the body where it's bound.
+    ((x, _), body) <- unbind b
+    -- Reduce the applicand by substituting first argument into the body.
+    pure $ subst x argument body
+step (App applicand argument) =
     -- We have an application of something other than a lambda. Try to first reduce
     -- then left-hand term and then the right-hand terms.
-    (App <$> step t1 <*> pure args) <|>
+    (App <$> step applicand <*> pure argument) <|>
     -- The following will not reduce in steps, but it will reduce the arguments
     -- at once.
-    (App t1 <$> traverse step args)
+    (App applicand <$> step argument)
 step (Let b) = do
     ((x, Embed t), body) <- unbind b
     pure $ subst x t body
@@ -65,21 +49,20 @@ eval :: Expr -> Expr
 eval = runFreshM . transitiveClosure step
 
 -- TODO: Implement and comment CoC conversion rules.
--- TODO: Check this whnf reduction for validity.
+-- TODO: Check this algorithm for correctness.
 -- TODO: Consider LFresh in place of Fresh. Possibly even a pure interface.
 whnf :: Fresh m => Expr -> m Expr
-whnf (App t1 args) = do
+whnf (App applicand argument) = do
     -- First reduce to applicand.
-    nf1 <- whnf t1
+    nf1 <- whnf applicand
     case nf1 of
         -- If the applicand reduces to a lambda, unbind it and substitute the
-        -- arguments.
-        -- TODO: Support partial application.
+        -- argument.
         Lam b -> do
-            (domain -> argNames, body) <- unbind b
-            whnf $ substs (zip argNames args) body
+            ((x, _), body) <- unbind b
+            whnf $ subst x argument body
         -- Otherwise only keep the applicand reduced.
-        _ -> pure (App nf1 args)
+        _ -> pure $ App nf1 argument
 whnf (Let b) = do
     ((x, Embed rhs), body) <- unbind b
     whnf $ subst x rhs body

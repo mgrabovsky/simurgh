@@ -36,12 +36,7 @@ whiteSpace = P.whiteSpace lexer
 
 arrow = reservedOp "=>"
 
-expr = do
-    applicand <- atom
-    args      <- many atom
-    if null args
-       then pure applicand
-       else pure (App applicand args)
+expr = mkApp <$> atom <*> many atom
 
 atom =  parens expr
     <|> reserved "Set" $> Set0
