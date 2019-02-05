@@ -36,6 +36,8 @@ Learning resources, hints, etc.:
 -   de Moura, L\., Avigad, J., Kong, S., Roux, C.: [_Elaboration in Dependent Type Theory_](http://www.contrib.andrew.cmu.edu/~avigad/Papers/constr.pdf)
 -   de Moura et al\.: [_The Lean Theorem Prover (system description)_](https://leanprover.github.io/papers/system.pdf)
 -   Danny Gratzer: [_Bidirectional Type Checkers for λ→ and λΠ_](https://jozefg.bitbucket.io/posts/2014-11-22-bidir.html)
+-   Paulin-Mohring, C\.: [_Introduction to the Calculus of Inductive Constructions_](https://hal.inria.fr/hal-01094195/)
+-   Eisenberg, R\. A.: [_Stitch: The Sound Type-Indexed Type Checker_](https://cs.brynmawr.edu/~rae/papers/2018/stitch/stitch.pdf)
 
 Also inspired by
 
