@@ -1,7 +1,9 @@
-This might be a moderately simple dependently typed thing one day. It is no more than
-a skeleton as of January 2019. Currently, there is an absolutely minimal core
-dependently typed lambda calculus with lambda terms, Pi types and a single type `Set`
-of type `Set`.
+# Simurgh
+
+One day in the distant future, Simurgh aims to be a total dependently typed
+programming language. It is no more than a skeleton as of January 2019. Currently,
+there is an absolutely minimal, core, dependently typed lambda calculus with lambda
+terms, Pi types and a single type universe `Set : Set`.
 
 ## Roadmap/Wishlist
 
