@@ -5,6 +5,21 @@ programming language. It is no more than a skeleton as of January 2019. Currentl
 there is an absolutely minimal, core, dependently typed lambda calculus with lambda
 terms, Pi types and a single type universe `Set : Set`.
 
+## Directory structure
+
+-   `src/Simurgh` contains the language implementation
+    +   `Syntax.hs` defines the abstract syntax type, telescopes and functions for
+        working with them
+    +   `Eval.hs` contains the evaluator with various reduction strategies
+    +   `Typing.hs` implements the bidirectional type checker and conversion rules
+    +   `Pretty.hs` has some facilities for pretty-printing the expressions of our
+        core language
+    +   `Parser.hs` implements a Parsec-based parser for the core language
+-   the `app/` directory contains a simple REPL for evaluating and typing the
+    expressions interactively
+-   `test/` contains a few very rudimentary tests of some of the components,
+    currently the evaluator and parser
+
 ## Roadmap/Wishlist
 
 - [x] Modern library for binding syntax – [Unbound](https://hackage.haskell.org/package/unbound-generics)
