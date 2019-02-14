@@ -2,8 +2,6 @@ module Simurgh.Parser
     ( parseExpr
     ) where
 
-import           Prelude              hiding (pi)
-
 import           Control.Applicative  ((<|>))
 import           Data.Functor         (($>))
 import           Text.Parsec          hiding ((<|>), Empty)

@@ -24,7 +24,6 @@ import Data.Monoid
 
 import Data.Typeable (Typeable)
 import GHC.Generics  (Generic)
-import Prelude       hiding (pi)
 
 import Unbound.Generics.LocallyNameless
 
