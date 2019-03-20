@@ -48,7 +48,7 @@ data Expr = Var  (Name Expr)
           | Let  (Bind (Name Expr, Embed Expr) Expr)
         -- ^ Local named bindings -- the familiar `let-in` construct.
           | Set0
-        -- ^ The base type which is its own type (for now).
+        -- ^ The base type universe. It is a member of itself for now.
           deriving (Generic, Show, Typeable)
 
 data Telescope = Empty

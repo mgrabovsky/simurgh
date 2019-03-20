@@ -66,7 +66,8 @@ eval = runFreshM . transitiveClosure step
 
 -- TODO: Implement and comment CoC conversion rules.
 -- TODO: Check this whnf reduction for validity.
--- TODO: Consider LFresh in place of Fresh. Possibly even a pure interface.
+-- TODO: Consider LFresh in place of Fresh. Possibly even a pure interface --
+-- purity most likely not possible.
 whnf :: Fresh m => Expr -> m Expr
 whnf (App t1 args) = do
     -- First reduce to applicand.

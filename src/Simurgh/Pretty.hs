@@ -4,7 +4,7 @@ module Simurgh.Pretty
 
 import qualified Data.Set             as S
 import           Data.Set             (Set)
-import           Data.Typeable (Typeable)
+import           Data.Typeable        (Typeable)
 import qualified Text.PrettyPrint     as PP
 import           Text.PrettyPrint     ((<+>), Doc)
 
