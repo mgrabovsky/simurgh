@@ -73,20 +73,25 @@ instance Subst Expr Telescope
 
 -- Functions for working with telescopes.
 -- TODO: Break out into a separate module.
+
+-- | Compute the domain of the telescope, i.e. a list of the bound names.
 domain :: Telescope -> [Name Expr]
 domain Empty                               = []
 domain (Cons (unrebind -> ((x, _), rest))) = x : domain rest
 
+-- | Compute the length of the telescope, i.e. the number of bound names.
 lengthTele :: Telescope -> Int
 lengthTele Empty                          = 0
 lengthTele (Cons (unrebind -> (_, rest))) = succ (lengthTele rest)
 
+-- | Take prefix of length at most @n@ from the telescope.
 takeTele :: Int -> Telescope -> Telescope
 takeTele 0 _                              = Empty
 takeTele _ Empty                          = Empty
 takeTele n (Cons (unrebind -> (b, rest))) =
     Cons (rebind b (takeTele (pred n) rest))
 
+-- | Drop prefix of length @n@ from the given telescope.
 dropTele :: Int -> Telescope -> Telescope
 dropTele 0 tele                           = tele
 dropTele _ Empty                          = Empty
