@@ -23,6 +23,7 @@ terms, Pi types and a single type universe `Set : Set`.
 ## Roadmap/Wishlist
 
 - [x] Modern library for binding syntax – [Unbound](https://hackage.haskell.org/package/unbound-generics)
+- [ ] Continuous integration with Travis
 - [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
   [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
   or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
