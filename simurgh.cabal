@@ -3,7 +3,7 @@ version:             0.2.1.0
 synopsis:            Dependently typed (hopefully) something.
 description:         Please see README.md
 homepage:            https://github.com/mgrabovsky/simurgh#readme
-license:             MIT
+license:             OtherLicense
 license-file:        LICENSE
 author:              Matěj Grabovský
 maintainer:          matej@mgrabovsky.net

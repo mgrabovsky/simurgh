@@ -63,3 +63,8 @@ Also inspired by
 -   Mörtberg et al.'s [implementation of Cubical Type Theory](https://github.com/mortberg/cubicaltt)
 -   Bauer at al.'s [Andromeda](https://andromedans.github.io/andromeda/)
 
+## Licence
+
+The code, documentation and other resources in this repository are provided under the
+conditions of the [Blue Oak Model License 1.0.0](https://blueoakcouncil.org/license/1.0.0).
+
