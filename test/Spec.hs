@@ -33,15 +33,19 @@ evaluatorTests = testGroup "Evaluator"
         fewerArgsResult = mkLam [("f", mkPi [("_", mkVar "Nat")] (mkVar "Unit")), ("a", mkVar "Nat")] (App (mkVar "f") [mkVar "a"])
 
 parserTests = testGroup "Parser: Parsing expressions"
-    [ testCase "parse Set literal" $
+    [ testCase "Set literal" $
         testParse "Set" Set0
-    , testCase "ignore white space" $
+    , testCase "whitespace is ignored" $
         testParse "   \n  Set\t\n  " Set0
-    , testCase "parse lambda function" $
+    , testCase "abstraction is parsed correctly" $
         testParse "  fun (A : Set) (x : A) (y : A) => eq A x y\n"
-            (mkLam [("A", Set0), ("x", mkVar "A"),
-                   ("y", mkVar "A")] $
+            (mkLam [("A", Set0), ("x", mkVar "A"), ("y", mkVar "A")] $
                   App (mkVar "eq") (mkVar <$> ["A", "x", "y"]))
+    , testCase "variables in abstraction are bound correctly" $
+        testParse "fun (a:A) (A:Set) (b:A) (f:C a b) => Set"
+            (mkLam [("a", mkVar "A"), ("A", Set0), ("b", mkVar "A"),
+                    ("f", App (mkVar "C") (mkVar <$> ["a", "b"]))]
+                   Set0)
     ]
     where testParse input expected = sequence_ $
             liftA2 assertAeq (parseExpr input) (Right expected)
