@@ -1,13 +1,13 @@
 # Simurgh
 
 One day in the distant future, Simurgh aims to be a total dependently typed
-programming language. It is no more than a skeleton as of January 2019. Currently,
-there is an absolutely minimal, core, dependently typed lambda calculus with lambda
-terms, Pi types and a single type universe `Set : Set`.
+programming language. It is no more than a skeleton as of August 2019. Currently,
+there is an absolutely minimal, dependently typed core lambda calculus with lambda
+abstractions, Pi types, `let` constructs and a single type universe `Set : Set`.
 
 ## Directory structure
 
--   `src/Simurgh` contains the language implementation
+-   `src/Simurgh/` contains the language implementation
     +   `Syntax.hs` defines the abstract syntax type, telescopes and functions for
         working with them
     +   `Eval.hs` contains the evaluator with various reduction strategies
@@ -19,6 +19,8 @@ terms, Pi types and a single type universe `Set : Set`.
     expressions interactively
 -   `test/` contains a few very rudimentary tests of some of the components,
     currently the evaluator and parser
+-   `notes/` contains various remarks on the development, the theory around it and
+    some tools used throughout
 
 ## Roadmap/Wishlist
 
