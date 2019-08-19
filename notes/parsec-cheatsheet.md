@@ -77,7 +77,7 @@ float :: Parser Double
 ```
 
 Parse a natural number, an integer or a floating-point value according to the rules
-specified in the Haskell report.
+specified in the [Haskell Report](https://www.haskell.org/onlinereport/haskell2010/).
 
 ```haskell
 naturalOrFloat :: Parser (Either Integer Double)
