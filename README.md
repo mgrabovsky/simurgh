@@ -29,19 +29,24 @@ abstractions, Pi types, `let` constructs and a single type universe `Set : Set`.
 - [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
   [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
   or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
-- [ ] Tests
+- [ ] Thorugh tests, at least for the parser and type checker
 - [ ] Improve parsing and error reporting. Look into
   [Trifecta](https://hackage.haskell.org/package/trifecta)
 - [ ] See if lenses can be leveraged anywhere
 - [ ] Pattern matching
 - [ ] \(Mutually) inductive data types
 - [ ] Module system, global definitions, `let`s
-- [ ] Play around with equality (intensional/extensional/observational)
-- [ ] Type universe hierarchy; subtyping
-- [ ] Recursive functions, fixpoints
-- [ ] Implicit arguments; elaboration à la Lean
-- [ ] More sophisticated syntax as part of higher-level languages which transform
-  into the low-level core language
+- [ ] Play around with notions of equality (intensional/extensional/observational)
+- [ ] Type universe hierarchy
+- [ ] Consider introducing an impredicative, proof-erased universe (à la `Prop`)
+- [ ] Subtyping
+- [ ] Primitive recursive functions
+- [ ] Structurally recursive functions
+- [ ] Investigate more elaborate techniques for termination checking (sized types,
+  etc.)
+- [ ] Implicit arguments, metavariables; elaboration à la Lean
+- [ ] Introduce a higher-level user-facing language with a more usable syntax
+  compiling into the into the low-level core language
 - [ ] First-class support for monads or algebraic effects
 
 ## References
