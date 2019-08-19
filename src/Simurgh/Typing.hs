@@ -33,12 +33,13 @@ lookUp v (Cons (unrebind -> ((x, Embed a), t')))
 
 unPi :: Expr -> TypingM (Bind Telescope Expr)
 unPi (Pi b) = pure b
-unPi t      = throwE $ "Unexpected Pi type: " <> show t
+unPi t      = throwE $ "Expected a Pi type, but got " <> show t
 
 infer :: Telescope -> Expr -> TypingM Expr
 infer g (Var x) = lookUp x g
 infer _ Set0    = pure Set0
 infer g (Lam b) = lunbind b $ \(delta, m) -> do
+    assertTypes g delta
     bty <- infer (g <> delta) m
     pure (Pi (bind delta bty))
 infer g (App left rights) = do
@@ -47,6 +48,7 @@ infer g (App left rights) = do
         checkList g rights delta
         multiSubst delta rights bty
 infer g (Pi b) = lunbind b $ \(delta, bty) -> do
+    assertTypes g delta
     check (g <> delta) bty Set0
     pure Set0
 infer g (Let b) = lunbind b $ \((x, Embed t), body) -> do
@@ -61,12 +63,24 @@ checkList g (t:rest) (Cons rb) = do
     checkList (subst x t g) (subst x t rest) (subst x t t')
 checkList _ _         _        = throwE "Unequal number of arguments and parameters"
 
+-- | @'assertTypes' delta tele@ checks that all the variables bound in the telescope
+-- @tele@ bind to well-formed types in the context @delta@.
+assertTypes :: Telescope -> Telescope -> TypingM ()
+assertTypes _     Empty          = pure ()
+assertTypes delta (Cons binders) = do
+    let ((x, Embed ty), binders') = unrebind binders
+    check delta ty Set0
+    let delta' = Cons $ rebind (x, Embed ty) delta
+    assertTypes delta' binders'
+
 multiSubst :: Telescope -> [Expr] -> Expr -> TypingM Expr
 multiSubst  Empty    []      t = pure t
 multiSubst (Cons rb) (t1:ts) t = multiSubst t1' ts t'
     where ((x, _), t1') = unrebind rb
           t'            = subst x t1 t
 
+-- | @'check' delta e t@ checks that the term @e@ has type @t@ in the context
+-- @delta@.
 check :: Telescope -> Expr -> Expr -> TypingM ()
 check g m a = do
     b <- infer g m
@@ -77,8 +91,8 @@ check g m a = do
 checkEq :: Expr -> Expr -> TypingM ()
 checkEq t1 t2 = if aeq t1 t2
                    then pure ()
-                   else throwE $ "Could not match " <> show t1 <>
-                       " with " <> show t2
+                   else throwE $ "Expected type " <> show t1 <>
+                       ", but got " <> show t2
 
 runTyping :: Expr -> Either String Expr
 runTyping = runLFreshM . runExceptT . infer Empty

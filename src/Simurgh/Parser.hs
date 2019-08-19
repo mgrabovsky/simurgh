@@ -52,6 +52,7 @@ atom =  parens expr
               <*> (reservedOp "=" *> expr)
               <*> (reserved "in" *> expr)
 
+-- TODO: Support syntax like `fun (x y : A) => _` for `fun (x : A) (y : A) => _`
 binders = many1 binder
 
 binder = parens ((,) <$> ident <*> (colon *> expr))
