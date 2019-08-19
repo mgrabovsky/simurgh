@@ -41,10 +41,10 @@ data Expr = Var  (Name Expr)
         -- ^ Terms can be applied to one another. We keep the "arguments" in a list
         -- in order to simplify semantics and interaction with telescopes.
           | Lam  (Bind Telescope Expr)
-        -- ^ λ expression binds names in a telescope inside its body.
+        -- ^ A λ expression binds names of a telescope inside its body.
           | Pi   (Bind Telescope Expr)
-        -- ^ Pi expression works similarly to λ expressions, but require the body to
-        -- be a type.
+        -- ^ A Π expression binds similarly to λ expressions, but requires the body
+        -- to be a type.
           | Let  (Bind (Name Expr, Embed Expr) Expr)
         -- ^ Local named bindings -- the familiar `let-in` construct.
           | Set0
