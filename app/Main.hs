@@ -17,10 +17,10 @@ import Simurgh.Eval   (eval)
 import Parser (Command(..), parseCommand)
 
 evaluate Help          = outputStrLn (
-    "Available commands:\n" <>
-    "    :?/h/help         Print this help message\n" <>
-    "    :q/quit           Quit the REPL\n" <>
-    "    :t/type <expr>    Infer the type of a term")
+    "Available commands:\n\n" <>
+    "    :[h]elp           Print this help message\n" <>
+    "    :[q]uit           Quit the REPL\n" <>
+    "    :[t]ype <expr>    Infer the type of a term")
 evaluate (Type input)  =
     case parseExpr input of
         Left (show -> err) -> outputStrLn $ "Parse error: " <> err
@@ -30,15 +30,16 @@ evaluate (Type input)  =
                 Right ty   -> outputStrLn (prettyPrint ty)
 evaluate (Eval input)  =
     case parseExpr input of
-        Left (show -> err) -> outputStrLn $ "Parse error: " <> err
+        Left (show -> err) -> outputStrLn $ "Parse error: " <> err <>
+                                            "\n\nType :help to see available commands."
         Right expr -> outputStrLn (prettyPrint (eval expr))
 evaluate (Unknown cmd) = outputStrLn $ "Error: Unknown command '" <> cmd <> "'"
 evaluate Quit          = liftIO exitSuccess
 
 motd =
-    "╒══════════════════════════════════╕\n" <>
-    "│  Hello! Welcome to Simurgh REPL. │\n" <>
-    "╘══════════════════════════════════╛\n"
+    "╒══════════════════════════════════════╕\n" <>
+    "│  Hello! Welcome to the Simurgh REPL. │\n" <>
+    "╘══════════════════════════════════════╛\n"
 
 repl = do
     line <- getInputLine "> "
