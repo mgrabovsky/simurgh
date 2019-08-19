@@ -110,7 +110,8 @@ count :: Int -> Parser a -> Parser [a]
 between :: Parser open -> Parser close -> Parser a -> Parser a
 ```
 
-TODO
+`between open close p` parses, in sequence, `open` followed by `p` and finally
+`close`. For examples, `braces = between (symbol "{") (symbol "}")`.
 
 ```haskell
 option :: a -> Parser a -> Parser a
@@ -137,36 +138,46 @@ Apply a parser _one_ or more times and ignore/collect the results.
 sepBy, sepBy1 :: Parser a -> Parser sep -> Parser [a]
 ```
 
-TODO
+`sepBy[1] p sep` parses zero or more (or at least one, respectively) occurrences of
+`p` separated by `sep`.
 
 ```haskell
 endBy, endBy1 :: Parser a -> Parser sep -> Parser [a]
 ```
 
-TODO
+`endBy[1] p sep` parses zero or more (or at least one, respectively) occurrences
+of `p` separated and _ended_ by `sep`.
 
 ```haskell
 sepEndBy, sepEndBy1 :: Parser a -> Parser sep -> Parser [a]
 ```
 
-TODO
+`sepEndBy[1] p sep` parses zero or more (or at least one, respectively) occurrences
+of `p` separated and _optionally ended_ by `sep`.
 
 ```haskell
 chainl, chainr :: Parser a -> Parser (a -> a -> a) -> a -> Parser a
 chainl1, chainr1 :: Parser a -> Parser (a -> a -> a) -> Parser a
 ```
-TODO
+
+`chain[lr] p f def` parses zero or more occurrences of `p` and produces a value by
+left/right-folding the accumulated values over `f`. If no occurrence is parsed, `def`
+is returned instead.
+
+`chain[lr]1 p f` parses one or more occurrences of `p` and produces a value by
+left/right-folding the accumulated values over `f`.
 
 ```haskell
 eof :: Parser ()
 ```
+
 Parse end of input.
 
 ```haskell
 notFollowedBy :: Parser a -> Parser ()
 ```
 
-TODO
+`notFollowedBy p` succeeds only if `p` fails. It does not consume any input.
 
 ```haskell
 manyTill :: Parser a -> Parser end -> Parser [a]
