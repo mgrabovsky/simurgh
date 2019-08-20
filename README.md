@@ -22,6 +22,20 @@ abstractions, Pi types, `let` constructs and a single type universe `Set : Set`.
 -   `notes/` contains various remarks on the development, the theory around it and
     some tools used throughout
 
+## Interactive prompt
+
+The `simurgh-exe` target provides a simple interactive prompt (or REPL) to test the
+features of the language. If a valid term is entered on the command line, it is
+evaluated, its type is inferred, and both the evaluated value and its type are then
+printed out.
+
+Currently, the following commands are supported:
+
+-   `:help` will print the help message which currently lists the available commands,
+    i.e. similarly to this very list.
+-   `:quit` will terminate the REPL.
+-   `:type <expr>` will infer and print the type of the given expression.
+
 ## Roadmap/Wishlist
 
 - [x] Modern library for binding syntax – [Unbound](https://hackage.haskell.org/package/unbound-generics)
@@ -29,7 +43,7 @@ abstractions, Pi types, `let` constructs and a single type universe `Set : Set`.
 - [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
   [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
   or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
-- [ ] Thorugh tests, at least for the parser and type checker
+- [ ] Thorough tests, at least for the parser and type checker
 - [ ] Improve parsing and error reporting. Look into
   [Trifecta](https://hackage.haskell.org/package/trifecta)
 - [ ] See if lenses can be leveraged anywhere
@@ -38,7 +52,7 @@ abstractions, Pi types, `let` constructs and a single type universe `Set : Set`.
 - [ ] Module system, global definitions, `let`s
 - [ ] Play around with notions of equality (intensional/extensional/observational)
 - [ ] Type universe hierarchy
-- [ ] Consider introducing an impredicative, proof-erased universe (à la `Prop`)
+- [ ] Consider introducing an impredicative, proof-irrelevant universe (à la `Prop`)
 - [ ] Subtyping
 - [ ] Primitive recursive functions
 - [ ] Structurally recursive functions
