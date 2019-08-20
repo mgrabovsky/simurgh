@@ -64,7 +64,8 @@ transitiveClosure f a = do
 eval :: Expr -> Expr
 eval = runFreshM . transitiveClosure step
 
--- TODO: Implement and comment CoC conversion rules.
+-- TODO: Implement and comment CoC conversion rules. Remark on differences between
+-- β, δ, η and ι rules.
 -- TODO: Check this whnf reduction for validity.
 -- TODO: Consider LFresh in place of Fresh. Possibly even a pure interface --
 -- purity most likely not possible.

@@ -51,6 +51,7 @@ data Expr = Var  (Name Expr)
         -- ^ The base type universe. It is a member of itself for now.
           deriving (Generic, Show, Typeable)
 
+-- TODO: Can we generalize and break the telescope out into a separate module?
 data Telescope = Empty
                | Cons (Rebind (Name Expr, Embed Expr) Telescope)
                deriving (Generic, Show, Typeable)
@@ -71,8 +72,7 @@ instance Subst Expr Expr where
 
 instance Subst Expr Telescope
 
--- Functions for working with telescopes.
--- TODO: Break out into a separate module.
+-- * Functions for working with telescopes.
 
 -- | Compute the domain of the telescope, i.e. a list of the bound names.
 domain :: Telescope -> [Name Expr]

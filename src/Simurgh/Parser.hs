@@ -57,6 +57,7 @@ atom =  parens expr
               <*> (reserved "in" *> expr)
 
 -- TODO: Support syntax like `fun (x y : A) => _` for `fun (x : A) (y : A) => _`
+-- NOTE: Mind expressions like `fun (A:Set) (A B:A) => Set`, which should be invalid.
 -- TODO: Parse `A -> B -> C` into `forall (_:A) (_:B) => C`,
 -- perhaps even Agda/Idris-like `(a:A) -> (b:B) -> C a b` for
 -- `forall (a:A) (b:B) => C A b`
