@@ -26,13 +26,15 @@ simurghDef = emptyDef
 
 lexer      = P.makeTokenParser simurghDef
 colon      = P.colon lexer
+comma      = P.comma lexer
 ident      = P.identifier lexer
 parens     = P.parens lexer
 reserved   = P.reserved lexer
 reservedOp = P.reservedOp lexer
 whitespace = P.whiteSpace lexer
 
-arrow = reservedOp "=>"
+arrow      = reservedOp "->"
+mapsto     = reservedOp "=>"
 
 -- | Parser for an expression of the core lambda calculus.
 expr = do
@@ -41,6 +43,9 @@ expr = do
     if null args
        then pure applicand
        else pure (App applicand args)
+-- TODO: Parse A -> B -> [expr]
+-- Note that A can be an [expr], too >:O
+-- Does something like `sepBy1 atom arrow` work?
 
 -- | Parser for an atomic expression of the language, i.e. the @Set@ literal,
 -- a variable name, lambda abstraction, Pi type, the @let-in@ construct or
@@ -48,9 +53,9 @@ expr = do
 atom =  parens expr
     <|> reserved "Set" $> Set0
     <|> mkVar <$> ident
-    <|> mkLam <$> (reserved "fun" *> binders <* arrow)
+    <|> mkLam <$> (reserved "fun" *> binders <* mapsto)
               <*> expr
-    <|> mkPi <$> (reserved "forall" *> binders <* arrow)
+    <|> mkPi <$> (reserved "forall" *> binders <* comma)
              <*> expr
     <|> mkLet <$> (reserved "let" *> ident)
               <*> (reservedOp "=" *> expr)
