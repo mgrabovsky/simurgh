@@ -71,5 +71,5 @@ binder = parens ((,) <$> ident <*> (colon *> expr))
 -- | Parse an expression of the core lambda calculus and return the result. The input
 -- file name is presumed to be "<stdin>".
 parseExpr :: String -> Either ParseError Expr
-parseExpr = parse (whitespace *> expr) "<stdin>"
+parseExpr = parse (whitespace *> expr <* eof) "<stdin>"
 
