@@ -15,8 +15,11 @@ cabal-version:       >= 1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     Simurgh.Eval, Simurgh.Parser, Simurgh.Pretty,
-                       Simurgh.Syntax, Simurgh.Typing
+  exposed-modules:     Simurgh.Eval
+                     , Simurgh.Parser
+                     , Simurgh.Pretty
+                     , Simurgh.Syntax
+                     , Simurgh.Typing
   default-extensions:  ViewPatterns
   build-depends:       base             >= 4.7     && < 5
                      , containers       >= 0.6     && < 1
@@ -31,7 +34,8 @@ library
 executable simurgh-exe
   hs-source-dirs:      app
   main-is:             Main.hs
-  other-modules:       Command, Parser
+  other-modules:       Command
+                     , Parser
   ghc-options:         -threaded -rtsopts -with-rtsopts=-N
   build-depends:       base
                      , haskeline   >= 0.7.5.0 && < 1
