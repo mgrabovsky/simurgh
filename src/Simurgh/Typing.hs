@@ -7,6 +7,7 @@ import Control.Monad.Trans.Except (ExceptT, runExceptT, throwE)
 import Unbound.Generics.LocallyNameless
 
 import Simurgh.Eval
+import Simurgh.Pretty
 import Simurgh.Syntax
 
 -- | Convertibility of λ terms.
@@ -33,7 +34,7 @@ lookUp v (Cons (unrebind -> ((x, Embed a), t')))
 
 unPi :: Expr -> TypingM (Bind Telescope Expr)
 unPi (Pi b) = pure b
-unPi t      = throwE $ "Expected a Pi type, but got " <> show t
+unPi t      = throwE $ "Expected a Pi type, but got " <> prettyPrint t
 
 infer :: Telescope -> Expr -> TypingM Expr
 infer g (Var x) = lookUp x g
@@ -91,8 +92,8 @@ check g m a = do
 checkEq :: Expr -> Expr -> TypingM ()
 checkEq t1 t2 = if aeq t1 t2
                    then pure ()
-                   else throwE $ "Expected type " <> show t1 <>
-                       ", but got " <> show t2
+                   else throwE $ "Expected type " <> prettyPrint t1 <>
+                       ", but got " <> prettyPrint t2
 
 runTyping :: Expr -> Either String Expr
 runTyping = runLFreshM . runExceptT . infer Empty
