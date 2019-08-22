@@ -37,22 +37,20 @@ arrow      = reservedOp "->"
 mapsto     = reservedOp "=>"
 
 -- | Parser for an expression of the core lambda calculus.
-expr = do
-    applicand <- atom
-    args      <- many atom
+app = do
+    applicand <- naked
+    args      <- many naked
     if null args
        then pure applicand
        else pure (App applicand args)
--- TODO: Parse A -> B -> [expr]
--- Note that A can be an [expr], too >:O
--- Does something like `sepBy1 atom arrow` work?
 
--- | Parser for an atomic expression of the language, i.e. the @Set@ literal,
--- a variable name, lambda abstraction, Pi type, the @let-in@ construct or
--- a parenthesised expression.
-atom =  parens expr
-    <|> reserved "Set" $> Set0
-    <|> mkVar <$> ident
+-- TODO: Can this be made more efficient?
+mkArrow t body = mkPi [("_", t)] body
+
+expr =  -- For expressions such as 'A x y -> B -> Set'.
+        -- TODO: Create tests for this syntax.
+        try (mkArrow <$> (app <* arrow) <*> expr)
+    <|> app
     <|> mkLam <$> (reserved "fun" *> binders <* mapsto)
               <*> expr
     <|> mkPi <$> (reserved "forall" *> binders <* comma)
@@ -60,6 +58,13 @@ atom =  parens expr
     <|> mkLet <$> (reserved "let" *> ident)
               <*> (reservedOp "=" *> expr)
               <*> (reserved "in" *> expr)
+
+-- | Parser for an atomic expression of the language, i.e. the @Set@ literal,
+-- a variable name, lambda abstraction, Pi type, the @let-in@ construct or
+-- a parenthesised expression.
+naked =  parens expr
+     <|> reserved "Set" $> Set0
+     <|> mkVar <$> ident
 
 -- TODO: Support syntax like `fun (x y : A) => _` for `fun (x : A) (y : A) => _`
 -- NOTE: Mind expressions like `fun (A:Set) (A B:A) => Set`, which should be invalid.
