@@ -52,6 +52,7 @@ data Expr = Var  (Name Expr)
           deriving (Generic, Show, Typeable)
 
 -- TODO: Can we generalize and break the telescope out into a separate module?
+-- TODO: Documentation.
 data Telescope = Empty
                | Cons (Rebind (Name Expr, Embed Expr) Telescope)
                deriving (Generic, Show, Typeable)
@@ -99,21 +100,27 @@ dropTele n (Cons (unrebind -> (_, rest))) = dropTele (pred n) rest
 
 -- Convenient helper functions.
 
+-- TODO: Documentation.
 mkVar :: String -> Expr
 mkVar x = Var (string2Name x)
 
+-- TODO: Documentation.
 mkApp :: Expr -> Expr -> Expr
 mkApp t1 t2 = App t1 [t2]
 
+-- TODO: Documentation.
 mkLam :: [(String, Expr)] -> Expr -> Expr
 mkLam xs t = Lam (bind (mkTelescope xs) t)
 
+-- TODO: Documentation.
 mkLet :: String -> Expr -> Expr -> Expr
 mkLet x t u = Let (bind (string2Name x, Embed t) u)
 
+-- | Make a Pi expression AST node from a list of binders and a body.
 mkPi :: [(String, Expr)] -> Expr -> Expr
 mkPi xs t = Pi (bind (mkTelescope xs) t)
 
+-- TODO: Documentation.
 mkTelescope :: [(String, Expr)] -> Telescope
 mkTelescope []             = Empty
 mkTelescope ((x, t) : xs') = Cons (rebind (string2Name x, Embed t) (mkTelescope xs'))

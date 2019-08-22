@@ -13,6 +13,11 @@ import           Unbound.Generics.LocallyNameless.Internal.Fold (toListOf)
 
 import Simurgh.Syntax
 
+-- TODO: Learn more about the individual tokens and combinators and how they can be
+-- best used.
+-- TODO: Pretty print `A -> B -> C` instaed of `Π(_:A)(_1:B), C`.
+-- TODO: Be more liberal with regards to naked expressions -- fewer parentheses.
+
 -- | Pretty printing for the new core syntax.
 
 fvSet :: (Alpha a, Typeable b) => a -> Set (Name b)
