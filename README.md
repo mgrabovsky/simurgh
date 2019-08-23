@@ -8,15 +8,21 @@ type universe `Set : Set`.
 
 ## Motivation
 
-I was amazed by the power and capabilities of the "big trinity" of CC-rooted theorem
-provers, [Coq](https://coq.inria.fr/),
+Since secondary school, I have been amazed by the enormous power and magic-like
+capabilities of theorem provers and dependent types, in particular the "big trinity"
+of CC-rooted languages, [Coq/Gallina](https://coq.inria.fr/),
 [Agda](https://wiki.portal.chalmers.se/agda/pmwiki.php) and
-[Idris](https://www.idris-lang.org/). I lived a happy, complacent certified life for
-some time untill [F*](https://www.fstar-lang.org/) and
-[Lean](https://leanprover.github.io/) appeared. They significantly changed my view of
-theorem provers, their potential and especially their usability. Lean and F* have
-shown that it is possible to improve the user experience of theorem proving and
-certified programming much more than what I had presumed before.
+[Idris](https://www.idris-lang.org/).
+
+For some time, I lived a happy, complacent certified life. Then, suddenly, in short
+order, [F*](https://www.fstar-lang.org/) and [Lean](https://leanprover.github.io/)
+appeared. These two fellas changed my view of theorem provers for years to come. They
+showed me that their potential is much greater than I perceived and that their
+usability can be improved beyond what I thought possible. The user experience aspect
+of their innovative approach appealed to me especially.
+
+Being enchanted by Haskell at the same time, I set out to create a toy, yet
+non-trivial prover of myself.
 
 ## Building
 
@@ -83,13 +89,13 @@ interestingness and distance in time:</summary>
 - [ ] Primitive recursive functions
 - [ ] Structurally recursive functions
 - [ ] Investigate more elaborate techniques for termination checking (sized types,
-  etc.)
+    etc.)
 - [ ] Coinduction
 - [ ] Induction-recursion and the kitchen sink
 - [ ] Play around with notions of equality (intensional/extensional/observational)
 - [ ] Investigate quotient types
 - [ ] Introduce a higher-level user-facing language with a more usable syntax
-  compiling into the into the low-level core language
+    compiling into the into the low-level core language
 - [ ] Implicit arguments, metavariables; elaboration à la Lean
 - [ ] Records and typeclasses
 - [ ] Implicit coercions
@@ -103,11 +109,15 @@ interestingness and distance in time:</summary>
 
 - [ ] Thorough tests, at least for the parser and type checker
 - [ ] Continuous integration with Travis
+- [ ] Create a couple of simple examples of the language
+- [ ] Create a prelude and a hint of a standard library
+- [ ] Formalize an easy, classical theorem, e.g. the infinitude of natural numbers,
+    irrationality of √2, infinitude of primes…
 - [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
-  [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint)
-  or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
+    [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint)
+    or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
 - [ ] Improve parsing and error reporting; look into
-  [Trifecta](https://hackage.haskell.org/package/trifecta)
+    [Trifecta](https://hackage.haskell.org/package/trifecta)
 - [ ] See if lenses can be leveraged anywhere
 </details>
 
@@ -134,6 +144,10 @@ Also inspired by
 -   Stephanie Weirich's [pi-forall](https://github.com/sweirich/pi-forall)
 -   Mörtberg et al.'s [implementation of Cubical Type Theory](https://github.com/mortberg/cubicaltt)
 -   Bauer at al.'s [Andromeda](https://andromedans.github.io/andromeda/)
+
+Back in 2015, I started collecting and sorting resources on the topic of formal
+methods in general. Though I haven't been as keen on updating it since, some of the
+results are available in my [fm-notes repository](https://mgrabovsky.net/fm-notes/).
 
 ## Licence
 
