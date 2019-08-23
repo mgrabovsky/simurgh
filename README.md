@@ -18,6 +18,35 @@ theorem provers, their potential and especially their usability. Lean and F* hav
 shown that it is possible to improve the user experience of theorem proving and
 certified programming much more than what I had presumed before.
 
+## Building
+
+The project is built on the Haskell Tool Stack, thus the following sequence of
+commands should suffice to build the library and the REPL executable:
+```
+$ git clone https://github.com/mgrabovsky/simurgh.git
+$ cd simurgh
+$ stack setup
+$ stack build
+```
+
+To run the REPL upon building the package, you can simply invoke
+```
+$ stack exec simurgh-exe
+```
+
+## Interactive prompt
+
+The `simurgh-exe` target provides a simple interactive prompt (or REPL) to test the
+features of the language. If a valid term is entered on the command line, it is
+evaluated and the result is printed out (no type checking of the input yet).
+
+Currently, the following commands are supported:
+
+-   `:help` will print the help message which currently lists the available commands,
+    i.e. similarly to this very list.
+-   `:quit` will terminate the REPL.
+-   `:type <expr>` will infer and print the type of the given expression.
+
 ## Directory structure
 
 -   `src/Simurgh/` contains the language implementation
@@ -35,39 +64,13 @@ certified programming much more than what I had presumed before.
 -   `notes/` contains various remarks on the development, the theory around it and
     some tools used throughout
 
-## Interactive prompt
-
-The `simurgh-exe` target provides a simple interactive prompt (or REPL) to test the
-features of the language. If a valid term is entered on the command line, it is
-evaluated and the result is printed out (no type checking of the input yet).
-
-Currently, the following commands are supported:
-
--   `:help` will print the help message which currently lists the available commands,
-    i.e. similarly to this very list.
--   `:quit` will terminate the REPL.
--   `:type <expr>` will infer and print the type of the given expression.
-
-## Building
-
-The project is built on the Haskell Tool Stack, thus the following sequence of
-commands should suffice to build the library and the REPL executable:
-```
-$ git clone https://github.com/mgrabovsky/simurgh.git
-$ cd simurgh
-$ stack setup
-$ stack build
-```
-
-To run the REPL upon building the package, you can simply invoke
-```
-$ stack exec simurgh-exe
-```
-
 ## Roadmap/Wishlist
 
-Regarding the language, listed roughly in ascending order of difficulty,
-interestingness and distance in time:
+_(Hint: Click the triangle ⯈ to expand the individual subsections.)_
+
+<details>
+<summary>Regarding the language, listed roughly in ascending order of difficulty,
+interestingness and distance in time:</summary>
 
 - [x] Modern library for binding syntax – [Unbound](https://hackage.haskell.org/package/unbound-generics)
 - [ ] Named definitions and axioms (think about opacity later)
@@ -93,8 +96,10 @@ interestingness and distance in time:
 - [ ] First-class support for monads (do-notation) or algebraic effects and handlers
 - [ ] Compilation to some real-world language, be it Haskell, Idris, Rust or C
 - [ ] [LLVM](https://github.com/llvm-hs/llvm-hs/) compilation
+</details>
 
-Regarding infrastructure and libraries:
+<details>
+<summary>Regarding infrastructure and libraries:</summary>
 
 - [ ] Thorough tests, at least for the parser and type checker
 - [ ] Continuous integration with Travis
@@ -104,22 +109,25 @@ Regarding infrastructure and libraries:
 - [ ] Improve parsing and error reporting; look into
   [Trifecta](https://hackage.haskell.org/package/trifecta)
 - [ ] See if lenses can be leveraged anywhere
+</details>
 
 ## References
 
 Reference papers and books, learning resources, study materials, etc. will be
-listed here.
+listed here in no particular order. Currently, the list consists partly of articles
+that inspired me the most and partly of papers illustrating the direction where I'd
+like to be headed.
 
--   Löh, A\., McBride, C., Swierstra, W.: [_Simply Easy! An Implementation of a Dependently Typed Lambda Calculus_](http://strictlypositive.org/Easy.pdf)
--   Altenkirch, T\., Danielsson, N. A., Löh, A., Oury, N.: [_ΠΣ: Dependent Types without the Sugar_](http://www.cs.nott.ac.uk/~psztxa/publ/pisigma-new.pdf)
--   Abel, A\., Altenkirch, T.: [_A Partial Type Checking Algorithm for Type : Type_](http://www.cs.nott.ac.uk/~psztxa/publ/msfp08.pdf)
--   Altenkirch, T\., McBride, C.: [_Towards Observational Type Theory_](http://strictlypositive.org/ott.pdf)
--   Altenkirch, T\., McBride, C., Swierstra, W.: [_Observational Equality, Now!_](http://www.cs.nott.ac.uk/~psztxa/publ/obseqnow.pdf)
--   de Moura, L\., Avigad, J., Kong, S., Roux, C.: [_Elaboration in Dependent Type Theory_](http://www.contrib.andrew.cmu.edu/~avigad/Papers/constr.pdf)
--   de Moura et al\.: [_The Lean Theorem Prover (system description)_](https://leanprover.github.io/papers/system.pdf)
--   Danny Gratzer: [_Bidirectional Type Checkers for λ→ and λΠ_](https://jozefg.bitbucket.io/posts/2014-11-22-bidir.html)
--   Paulin-Mohring, C\.: [_Introduction to the Calculus of Inductive Constructions_](https://hal.inria.fr/hal-01094195/)
--   Eisenberg, R\. A.: [_Stitch: The Sound Type-Indexed Type Checker_](https://cs.brynmawr.edu/~rae/papers/2018/stitch/stitch.pdf)
+-   Löh, A\., McBride, C. & Swierstra, W. (2007). [Simply Easy! An Implementation of a Dependently Typed Lambda Calculus](http://strictlypositive.org/Easy.pdf).
+-   Altenkirch, T\. _et al._ (2010). [ΠΣ: Dependent Types without the Sugar](http://www.cs.nott.ac.uk/~psztxa/publ/pisigma-new.pdf).
+-   Abel, A\. & Altenkirch, T. (2008). [A Partial Type Checking Algorithm for Type : Type](http://www.cs.nott.ac.uk/~psztxa/publ/msfp08.pdf).
+-   Altenkirch, T\. & McBride, C. (2006). [Towards Observational Type Theory](http://strictlypositive.org/ott.pdf).
+-   Altenkirch, T\., McBride, C. & Swierstra, W. (2007). [Observational Equality, Now!](http://www.cs.nott.ac.uk/~psztxa/publ/obseqnow.pdf).
+-   de Moura, L\. et al\. (2015). [Elaboration in Dependent Type Theory](https://arxiv.org/abs/1505.04324). _Unpublished._
+-   de Moura, L\. et al\. (2015). [The Lean Theorem Prover (system description)](https://leanprover.github.io/papers/system.pdf).
+-   Gratzer, D\. (2014). [Bidirectional Type Checkers for λ→ and λΠ](https://jozefg.bitbucket.io/posts/2014-11-22-bidir.html).
+-   Paulin-Mohring, C\. (2014). [Introduction to the Calculus of Inductive Constructions](https://hal.inria.fr/hal-01094195/).
+-   Eisenberg, R\. A. (2018). [Stitch: The Sound Type-Indexed Type Checker](https://cs.brynmawr.edu/~rae/papers/2018/stitch/stitch.pdf).
 
 Also inspired by
 
