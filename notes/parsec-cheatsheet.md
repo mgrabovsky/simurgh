@@ -92,6 +92,13 @@ decimal, hexadecimal, octal :: Parser Integer
 Parse a natural number in decimal, hexadecimal (prefixed with `0x` or `0X`), or
 octal (prefixed with `0o` or `0O`) base.
 
+```haskell
+eof :: Parser ()
+```
+
+Parse end of input.
+
+
 ## Combinators
 
 ```haskell
@@ -168,12 +175,6 @@ is returned instead.
 left/right-folding the accumulated values over `f`.
 
 ```haskell
-eof :: Parser ()
-```
-
-Parse end of input.
-
-```haskell
 notFollowedBy :: Parser a -> Parser ()
 ```
 
@@ -184,6 +185,13 @@ manyTill :: Parser a -> Parser end -> Parser [a]
 ```
 
 `manyTill p end` applies the parser `p` until `end` succeeds, collecting the results.
+
+```haskell
+try :: Parser a -> Parser a
+```
+
+Try to parse with the given parser, but don't consume any input if it fails. This
+allows `(<|>)` to try the other alternative in a sequence.
 
 ```haskell
 lookAhead :: Parser a -> Parser a
