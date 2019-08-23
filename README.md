@@ -88,18 +88,20 @@ interestingness and distance in time:
 - [ ] Introduce a higher-level user-facing language with a more usable syntax
   compiling into the into the low-level core language
 - [ ] Implicit arguments, metavariables; elaboration à la Lean
+- [ ] Records and typeclasses
+- [ ] Implicit coercions
 - [ ] First-class support for monads (do-notation) or algebraic effects and handlers
 - [ ] Compilation to some real-world language, be it Haskell, Idris, Rust or C
-- [ ] LLVM compilations
+- [ ] [LLVM](https://github.com/llvm-hs/llvm-hs/) compilation
 
 Regarding infrastructure and libraries:
 
 - [ ] Thorough tests, at least for the parser and type checker
 - [ ] Continuous integration with Travis
 - [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
-  [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
+  [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint)
   or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
-- [ ] Improve parsing and error reporting. Look into
+- [ ] Improve parsing and error reporting; look into
   [Trifecta](https://hackage.haskell.org/package/trifecta)
 - [ ] See if lenses can be leveraged anywhere
 
