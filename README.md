@@ -1,9 +1,22 @@
 # Simurgh
 
-One day in the distant future, Simurgh aims to be a total dependently typed
-programming language. It is no more than a skeleton as of August 2019. Currently,
-there is an absolutely minimal, dependently typed core lambda calculus with lambda
-abstractions, Pi types, `let` constructs and a single type universe `Set : Set`.
+One day in the distant future, Simurgh aims to be a (toy) total dependently typed
+programming language and a (toy) theorem prover. As of August 2019, it is no more
+than a skeleton. Currently, there is an absolutely minimal dependently typed core
+lambda calculus with lambda abstractions, Pi types, `let` constructs and a single
+type universe `Set : Set`.
+
+## Motivation
+
+I was amazed by the power and capabilities of the "big trinity" of CC-rooted theorem
+provers, [Coq](https://coq.inria.fr/),
+[Agda](https://wiki.portal.chalmers.se/agda/pmwiki.php) and
+[Idris](https://www.idris-lang.org/). I lived a happy, complacent certified life for
+some time untill [F*](https://www.fstar-lang.org/) and
+[Lean](https://leanprover.github.io/) appeared. They significantly changed my view of
+theorem provers, their potential and especially their usability. Lean and F* have
+shown that it is possible to improve the user experience of theorem proving and
+certified programming much more than what I had presumed before.
 
 ## Directory structure
 
@@ -18,7 +31,7 @@ abstractions, Pi types, `let` constructs and a single type universe `Set : Set`.
 -   the `app/` directory contains a simple REPL for evaluating and typing the
     expressions interactively
 -   `test/` contains a few very rudimentary tests of some of the components,
-    currently the evaluator and parser
+    currently the evaluator and the parser
 -   `notes/` contains various remarks on the development, the theory around it and
     some tools used throughout
 
@@ -26,8 +39,7 @@ abstractions, Pi types, `let` constructs and a single type universe `Set : Set`.
 
 The `simurgh-exe` target provides a simple interactive prompt (or REPL) to test the
 features of the language. If a valid term is entered on the command line, it is
-evaluated, its type is inferred, and both the evaluated value and its type are then
-printed out.
+evaluated and the result is printed out (no type checking of the input yet).
 
 Currently, the following commands are supported:
 
@@ -36,36 +48,65 @@ Currently, the following commands are supported:
 -   `:quit` will terminate the REPL.
 -   `:type <expr>` will infer and print the type of the given expression.
 
+## Building
+
+The project is built on the Haskell Tool Stack, thus the following sequence of
+commands should suffice to build the library and the REPL executable:
+```
+$ git clone https://github.com/mgrabovsky/simurgh.git
+$ cd simurgh
+$ stack setup
+$ stack build
+```
+
+To run the REPL upon building the package, you can simply invoke
+```
+$ stack exec simurgh-exe
+```
+
 ## Roadmap/Wishlist
 
+Regarding the language, listed roughly in ascending order of difficulty,
+interestingness and distance in time:
+
 - [x] Modern library for binding syntax – [Unbound](https://hackage.haskell.org/package/unbound-generics)
-- [ ] Continuous integration with Travis
-- [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
-  [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
-  or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
-- [ ] Thorough tests, at least for the parser and type checker
-- [ ] Improve parsing and error reporting. Look into
-  [Trifecta](https://hackage.haskell.org/package/trifecta)
-- [ ] See if lenses can be leveraged anywhere
-- [ ] Pattern matching
+- [ ] Named definitions and axioms (think about opacity later)
+- [ ] Type universe hierarchy; subtyping
+- [ ] Impredicative, proof-irrelevant universe (à la `Prop`)?
+- [ ] Module system or namespaces
+- [ ] Opaque definitions
 - [ ] \(Mutually) inductive data types
-- [ ] Module system, global definitions, `let`s
-- [ ] Play around with notions of equality (intensional/extensional/observational)
-- [ ] Type universe hierarchy
-- [ ] Consider introducing an impredicative, proof-irrelevant universe (à la `Prop`)
-- [ ] Subtyping
+- [ ] Pattern matching
 - [ ] Primitive recursive functions
 - [ ] Structurally recursive functions
 - [ ] Investigate more elaborate techniques for termination checking (sized types,
   etc.)
-- [ ] Implicit arguments, metavariables; elaboration à la Lean
+- [ ] Coinduction
+- [ ] Induction-recursion and the kitchen sink
+- [ ] Play around with notions of equality (intensional/extensional/observational)
+- [ ] Investigate quotient types
 - [ ] Introduce a higher-level user-facing language with a more usable syntax
   compiling into the into the low-level core language
-- [ ] First-class support for monads or algebraic effects
+- [ ] Implicit arguments, metavariables; elaboration à la Lean
+- [ ] First-class support for monads (do-notation) or algebraic effects and handlers
+- [ ] Compilation to some real-world language, be it Haskell, Idris, Rust or C
+- [ ] LLVM compilations
+
+Regarding infrastructure and libraries:
+
+- [ ] Thorough tests, at least for the parser and type checker
+- [ ] Continuous integration with Travis
+- [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
+  [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
+  or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
+- [ ] Improve parsing and error reporting. Look into
+  [Trifecta](https://hackage.haskell.org/package/trifecta)
+- [ ] See if lenses can be leveraged anywhere
 
 ## References
 
-Learning resources, hints, etc.:
+Reference papers and books, learning resources, study materials, etc. will be
+listed here.
 
 -   Löh, A\., McBride, C., Swierstra, W.: [_Simply Easy! An Implementation of a Dependently Typed Lambda Calculus_](http://strictlypositive.org/Easy.pdf)
 -   Altenkirch, T\., Danielsson, N. A., Löh, A., Oury, N.: [_ΠΣ: Dependent Types without the Sugar_](http://www.cs.nott.ac.uk/~psztxa/publ/pisigma-new.pdf)
