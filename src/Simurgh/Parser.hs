@@ -2,26 +2,32 @@ module Simurgh.Parser
     ( parseExpr
     ) where
 
-import           Control.Applicative  ((<|>))
-import           Data.Functor         (($>))
-import           Text.Parsec          hiding ((<|>), Empty)
-import           Text.Parsec.Language (emptyDef)
-import qualified Text.Parsec.Token    as P
+import           Control.Applicative ((<|>))
+import           Data.Functor        (($>))
+import           Text.Parsec         hiding ((<|>), Empty)
+import qualified Text.Parsec.Token   as P
 
 import Simurgh.Syntax
 
 -- TODO: Parse modules, imports, declarations, etc.
 -- TODO: Consider switching to ByteString and parsing Unicode syntax as well.
--- For instance, → ⇒ λ ∀ Π.
+-- For instance, ∀ Π → λ ⇒. This will require rewriting the REPL, as well, as it
+-- relies on Strings.
 
 -- | A parser for the new Unbound-based core syntax representation.
 
 -- | Lexer definition
-simurghDef = emptyDef
-    { P.commentStart    = "{-"
+simurghDef :: Monad m => P.GenLanguageDef String st m
+simurghDef = P.LanguageDef
+    { P.caseSensitive   = True
+    , P.commentStart    = "{-"
     , P.commentEnd      = "-}"
     , P.commentLine     = "--"
     , P.nestedComments  = True
+    , P.identStart      = letter <|> char '_'
+    , P.identLetter     = alphaNum <|> oneOf "_'"
+    , P.opStart         = P.opLetter simurghDef
+    , P.opLetter        = oneOf ":!#$%&*+./<=>?@\\^|-~"
     , P.reservedNames   = ["forall", "fun", "in", "let"]
     , P.reservedOpNames = ["->", "=>", "="]
     }
@@ -71,7 +77,7 @@ naked =  parens expr
      <|> mkVar <$> ident
 
 -- TODO: Support syntax like `fun (x y : A) => _` for `fun (x : A) (y : A) => _`
--- NOTE: Mind expressions like `fun (A:Set) (A B:A) => Set`, which should be invalid.
+-- NOTE: Mind expressions like `fun (A:Set) (B C:B) => Set`, which should (?) be invalid.
 -- TODO: Parse `A -> B -> C` into `forall (_:A) (_:B) => C`,
 -- perhaps even Agda/Idris-like `(a:A) -> (b:B) -> C a b` for
 -- `forall (a:A) (b:B) => C A b`
