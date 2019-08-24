@@ -46,18 +46,14 @@ app = do
        then pure applicand
        else pure (App applicand args)
 
--- TODO: Can this be made more efficient for longer chains?
--- Such as `A -> B -> C -> D -> Q` → `Π(_:A)(_:B)(_:C)(_:D), Q`
--- instead of `Π(_:A), Π(_:B), Π(_:C), Π(_:D), Q`.
--- mkArrow t (Pi b) = [l]unbind ...
-mkArrow t body = mkPi [("_", t)] body
+mkArrow t1 ts = let bs   = init (t1:ts)
+                    body = last ts
+                 in mkPi ((,) "_" <$> bs) body
 -- FIXME: It's not safe to bind a variable named `_` here.
 
 expr =  -- For expressions such as `A x y -> B -> Set`.
         -- TODO: Create tests for this syntax.
-        -- TODO: Do we need the try here? Perhaps something like for `expr` above
-        -- would work as well: `_ <$> app <*> (arrow *> sepBy1 expr arrow)`
-        try (mkArrow <$> app <*> (arrow *> expr))
+        try (mkArrow <$> app <*> (arrow *> sepBy1 expr arrow))
     <|> app
     <|> mkLam <$> (reserved "fun" *> binders <* mapsto)
               <*> expr
