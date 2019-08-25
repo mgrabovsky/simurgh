@@ -11,8 +11,7 @@ import Unbound.Generics.LocallyNameless
 
 import Simurgh.Syntax
 
--- Evaluator for our toy untyped lambda calculus.
--- Based on a small-step, call-by-value operational semantics.
+-- Call-by-value evaluator for core lambda calculus.
 
 done :: MonadPlus m => m a
 done = mzero
@@ -59,19 +58,19 @@ transitiveClosure f a = do
       Just a' -> transitiveClosure f a'
       Nothing -> pure a
 
--- | Evaluate (normalize) a term of our toy untyped lambda calculus.
+-- | Evaluate (normalize) a term of our language.
 -- This is a transitive closure of 'step'.
 eval :: Expr -> Expr
 eval = runFreshM . transitiveClosure step
 
 -- TODO: Implement and comment CoC conversion rules. Remark on differences between
 -- β, δ, η and ι rules.
--- TODO: Check this whnf reduction for validity.
+-- TODO: Is this used/usable anywhere right now? In the future?
 -- TODO: Consider LFresh in place of Fresh. Possibly even a pure interface --
 -- purity most likely not possible.
 whnf :: Fresh m => Expr -> m Expr
 whnf (App t1 args) = do
-    -- First reduce to applicand.
+    -- Reduce the applicand first.
     nf1 <- whnf t1
     case nf1 of
         -- If the applicand reduces to a lambda, unbind it and substitute the

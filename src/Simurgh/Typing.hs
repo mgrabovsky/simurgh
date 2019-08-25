@@ -10,18 +10,6 @@ import Simurgh.Eval
 import Simurgh.Pretty
 import Simurgh.Syntax
 
--- | Convertibility of λ terms.
-(~=) :: Expr -> Expr -> FreshM Bool
-e1 ~= e2
-  | e1 `aeq` e2 = pure True
-  | otherwise   = do
-      -- Originally, this was full reduction to the normal form rather than whnf.
-      e1' <- whnf e1
-      e2' <- whnf e2
-      if e1' `aeq` e1 && e2' `aeq` e2
-         then pure False
-         else e1 ~= e2
-
 type TypingM = ExceptT String LFreshM
 
 lookUp :: Name Expr -> Telescope -> TypingM Expr
@@ -88,7 +76,6 @@ check g m a = do
     checkEq b a
 
 -- | A very limited notion of equality.
--- TODO: Consider convertibility (~=).
 checkEq :: Expr -> Expr -> TypingM ()
 checkEq t1 t2 = if aeq t1 t2
                    then pure ()
