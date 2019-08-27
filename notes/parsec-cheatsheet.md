@@ -1,3 +1,7 @@
+[Parsec](https://hackage.haskell.org/package/parsec) is the parsing library employed
+by the Simurgh front end. Here are some useful functions it provides and their brief
+description.
+
 ## Punctuation
 
 ```haskell
@@ -19,35 +23,20 @@ colon, comma, semi, dot :: Parser String
 
 Parse a colon, comma, semicolon, or dot and skip any trailing white space.
 
-## Lexemes
+```haskell
+between :: Parser open -> Parser close -> Parser a -> Parser a
+```
+
+`between open close p` parses, in sequence, `open` followed by `p` and finally
+`close`. For examples, `braces = between (symbol "{") (symbol "}")`.
+
+## Predefined lexemes
 
 ```haskell
 symbol :: String -> Parser String
 ```
 
 Parse a string and skip trailing white space.
-
-```haskell
-lexeme :: Parser a -> Parser a
-```
-
-`lexeme p` first applies `p` and then the `whiteSpace` parser. This ensures that the
-next parser starts at a point without white space. Every lexical token (lexeme) is
-defined this way.
-
-```haskell
-commaSep, semiSep :: Parser a -> Parser [a]
-```
-
-Parse zero or more occurences of a lexeme separated by a comma/semicolon.
-
-```haskell
-commaSep1, semiSep1 :: Parser a -> Parser [a]
-```
-
-Parse _one_ or more occurences of a lexeme separated by a comma/semicolon.
-
-## Predefined lexemes
 
 ```haskell
 identifier, operator :: Parser String
@@ -98,8 +87,15 @@ eof :: Parser ()
 
 Parse end of input.
 
-
 ## Combinators
+
+```haskell
+lexeme :: Parser a -> Parser a
+```
+
+`lexeme p` first applies `p` and then the `whiteSpace` parser. This ensures that the
+next parser starts at a point without white space. Every lexical token (lexeme) is
+defined this way.
 
 ```haskell
 choice :: [Parser a] -> Parser a
@@ -108,24 +104,11 @@ choice :: [Parser a] -> Parser a
 Try to apply the parser in sequence until the first success.
 
 ```haskell
-count :: Int -> Parser a -> Parser [a]
-```
-
-`count n p` parses exactly `n > 0` occurrences of `p`.
-
-```haskell
-between :: Parser open -> Parser close -> Parser a -> Parser a
-```
-
-`between open close p` parses, in sequence, `open` followed by `p` and finally
-`close`. For examples, `braces = between (symbol "{") (symbol "}")`.
-
-```haskell
 option :: a -> Parser a -> Parser a
 optionMaybe :: Parser a -> Parser (Maybe a)
 ```
 
-Try to apply the parser and return a default value/Nothing on failure.
+Try to apply the parser and return a default value/`Nothing` on failure.
 
 ```haskell
 optional :: Parser a -> Parser ()
@@ -135,11 +118,57 @@ optional :: Parser a -> Parser ()
 after consuming input.
 
 ```haskell
-skipMany1 :: Parser a -> Parser ()
-many1 :: Parser a -> Parser [a]
+chainl, chainr :: Parser a -> Parser (a -> a -> a) -> a -> Parser a
+chainl1, chainr1 :: Parser a -> Parser (a -> a -> a) -> Parser a
 ```
 
-Apply a parser _one_ or more times and ignore/collect the results.
+`chain[lr] p f def` parses zero or more occurrences of `p` and produces a value by
+left/right-folding the accumulated values over `f`. If no occurrence is parsed, `def`
+is returned instead.
+
+`chain[lr]1 p f` parses one or more occurrences of `p` and produces a value by
+left/right-folding the accumulated values over `f`.
+
+```haskell
+try :: Parser a -> Parser a
+```
+
+Try to parse with the given parser, but don't consume any input if it fails. This
+allows `(<|>)` to try the other alternative in a sequence.
+
+```haskell
+notFollowedBy :: Parser a -> Parser ()
+```
+
+`notFollowedBy p` succeeds only if `p` fails. It does not consume any input.
+
+```haskell
+lookAhead :: Parser a -> Parser a
+```
+
+Parse without consuming any input. Fail if the inner parser fails with consumed
+input.
+
+### Combinators for sequences of entities
+
+```haskell
+many, many1 :: Parser a -> Parser [a]
+skipMany, skipMany1 :: Parser a -> Parser ()
+```
+
+Apply a parser zero or more (_one_ or more) times and collect/ignore the results.
+
+```haskell
+manyTill :: Parser a -> Parser end -> Parser [a]
+```
+
+`manyTill p end` applies the parser `p` until `end` succeeds, collecting the results.
+
+```haskell
+count :: Int -> Parser a -> Parser [a]
+```
+
+`count n p` parses exactly `n > 0` occurrences of `p`.
 
 ```haskell
 sepBy, sepBy1 :: Parser a -> Parser sep -> Parser [a]
@@ -163,40 +192,14 @@ sepEndBy, sepEndBy1 :: Parser a -> Parser sep -> Parser [a]
 of `p` separated and _optionally ended_ by `sep`.
 
 ```haskell
-chainl, chainr :: Parser a -> Parser (a -> a -> a) -> a -> Parser a
-chainl1, chainr1 :: Parser a -> Parser (a -> a -> a) -> Parser a
+commaSep, semiSep :: Parser a -> Parser [a]
 ```
 
-`chain[lr] p f def` parses zero or more occurrences of `p` and produces a value by
-left/right-folding the accumulated values over `f`. If no occurrence is parsed, `def`
-is returned instead.
-
-`chain[lr]1 p f` parses one or more occurrences of `p` and produces a value by
-left/right-folding the accumulated values over `f`.
+Parse zero or more occurences of a lexeme separated by a comma/semicolon.
 
 ```haskell
-notFollowedBy :: Parser a -> Parser ()
+commaSep1, semiSep1 :: Parser a -> Parser [a]
 ```
 
-`notFollowedBy p` succeeds only if `p` fails. It does not consume any input.
-
-```haskell
-manyTill :: Parser a -> Parser end -> Parser [a]
-```
-
-`manyTill p end` applies the parser `p` until `end` succeeds, collecting the results.
-
-```haskell
-try :: Parser a -> Parser a
-```
-
-Try to parse with the given parser, but don't consume any input if it fails. This
-allows `(<|>)` to try the other alternative in a sequence.
-
-```haskell
-lookAhead :: Parser a -> Parser a
-```
-
-Parse without consuming any input. Fail if the inner parser fails with consumed
-input.
+Parse _one_ or more occurences of a lexeme separated by a comma/semicolon.
 
