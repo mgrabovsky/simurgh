@@ -107,15 +107,21 @@ interestingness and distance in time:</summary>
 <details>
 <summary>Regarding infrastructure and libraries:</summary>
 
+- [ ] Get Haskeline to [support Text](https://github.com/judah/haskeline/issues/80)
+- [ ] Consider an alternative Prelude, such as
+    [Protolude](https://www.stackage.org/lts-14.2/package/protolude)
 - [ ] Thorough tests, at least for the parser and type checker
+- [ ] Introduce property tests -- QuickCheck or
+    [Hedgehog](https://github.com/hedgehogqa/haskell-hedgehog)
 - [ ] Continuous integration with Travis
 - [ ] Create a couple of simple examples of the language
 - [ ] Create a prelude and a hint of a standard library
 - [ ] Formalize an easy, classical theorem, e.g. the infinitude of natural numbers,
     irrationality of √2, infinitude of primes…
 - [ ] Modern pretty-printing – [Hughes/PJ](https://hackage.haskell.org/package/pretty),
-    [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint)
-    or [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty)
+    [Wadler/Leijen](https://hackage.haskell.org/package/ansi-wl-pprint),
+    [mainland-pretty](https://hackage.haskell.org/package/mainland-pretty) or
+    [prettyprinter](https://github.com/quchen/prettyprinter)
 - [ ] Improve parsing and error reporting; look into
     [Trifecta](https://hackage.haskell.org/package/trifecta)
 - [ ] See if lenses can be leveraged anywhere
