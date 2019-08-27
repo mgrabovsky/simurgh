@@ -7,9 +7,7 @@ import           Data.Set             (Set)
 import           Data.Typeable        (Typeable)
 import qualified Text.PrettyPrint     as PP
 import           Text.PrettyPrint     ((<+>), Doc, colon, comma, parens)
-
 import           Unbound.Generics.LocallyNameless
-import           Unbound.Generics.LocallyNameless.Internal.Fold (toListOf)
 
 import Simurgh.Syntax
 
@@ -21,9 +19,6 @@ import Simurgh.Syntax
 -- | Pretty printing for the new core syntax.
 
 mapsto = PP.text "=>"
-
-fvSet :: (Alpha a, Typeable b) => a -> Set (Name b)
-fvSet = S.fromList . toListOf fv
 
 class Pretty p where
     pprint :: (Applicative f, LFresh f) => p -> f Doc
