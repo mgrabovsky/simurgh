@@ -29,7 +29,7 @@ simurghDef = P.LanguageDef
     , P.opStart         = P.opLetter simurghDef
     , P.opLetter        = oneOf ":!#$%&*+./<=>?@\\^|-~"
     , P.reservedNames   = ["forall", "fun", "in", "let"]
-    , P.reservedOpNames = ["->", "=>", "="]
+    , P.reservedOpNames = [":=", "->", "=>", "="]
     }
 
 lexer      = P.makeTokenParser simurghDef
@@ -42,6 +42,7 @@ reservedOp = P.reservedOp lexer
 whitespace = P.whiteSpace lexer
 
 arrow      = reservedOp "->"
+assign     = reservedOp ":="
 mapsto     = reservedOp "=>"
 
 -- | Parser for an expression of the core lambda calculus.
@@ -66,7 +67,7 @@ expr =  -- For expressions such as `A x y -> B -> Set`.
     <|> mkPi <$> (reserved "forall" *> binders <* comma)
              <*> expr
     <|> mkLet <$> (reserved "let" *> ident)
-              <*> (reservedOp "=" *> expr)
+              <*> (assign *> expr)
               <*> (reserved "in" *> expr)
 
 -- | Parser for an atomic expression of the language, i.e. the @Set@ literal,
