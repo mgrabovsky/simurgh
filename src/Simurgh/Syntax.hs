@@ -1,10 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE ScopedTypeVariables #-}
 
 module Simurgh.Syntax
     ( Expr(..)
@@ -21,10 +17,8 @@ module Simurgh.Syntax
     ) where
 
 import Data.Monoid
-
-import Data.Typeable (Typeable)
-import GHC.Generics  (Generic)
-
+import Data.Typeable                    (Typeable)
+import GHC.Generics                     (Generic)
 import Unbound.Generics.LocallyNameless
 
 -- TODO: Syntax for modules, imports, data types, etc.
