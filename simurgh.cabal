@@ -20,6 +20,7 @@ library
                      , Simurgh.Pretty
                      , Simurgh.Syntax
                      , Simurgh.Typing
+  other-modules:       Simurgh.Module
   default-extensions:  ViewPatterns
   build-depends:       base             >= 4.7     && < 5
                      , containers       >= 0.6     && < 1
