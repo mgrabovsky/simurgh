@@ -13,16 +13,26 @@ import Unbound.Generics.LocallyNameless
 
 import Simurgh.Syntax
 
+-- Convenient type synonym.
+type Type = Expr
+
 data Module = Module (TRec [ModuleItem])
             deriving (Generic, Show, Typeable)
-data ModuleItem = Axiom (Name Expr) (Embed Expr)
-                | Defn  (Name Expr) (Embed Expr) (Embed Expr)
+-- FIXME: This is not the binding structure we want. The names should not bind
+-- insides their types. (Altough they may bind inside the body.)
+data ModuleItem = Axiom (Name Expr) (Embed Type)
+                | Defn  (Name Expr) (Embed Type) (Embed Expr)
                 deriving (Generic, Show, Typeable)
 
 instance Alpha Module
 instance Alpha ModuleItem
 instance Subst Expr Module
 instance Subst Expr ModuleItem
+
+bindingTest = Module (trec [axA]) where
+    axA    = Axiom (string2Name "A") (Embed (mkPi [("_", App (mkVar "f") [mkVar "A"])]
+                                                  Set0))
+    trec p = TRec (bind (rec p) ())
 
 moduleTest = Module (trec [bool, true, false, bneg, band, bor]) where
     -- axiom bool : Set
