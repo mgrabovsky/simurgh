@@ -1,14 +1,16 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE DeriveGeneric #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
 
 module Simurgh.Module
     ( Module
-    , ModuleItem(..)
+    , Entity(..)
     ) where
 
-import Data.Typeable                    (Typeable)
-import GHC.Generics                     (Generic)
+import Data.Map      (Map, fromAscList, singleton)
+import Data.Typeable (Typeable)
+import GHC.Generics  (Generic)
+import Prelude       hiding (pi)
+
 import Unbound.Generics.LocallyNameless
 
 import Simurgh.Syntax
@@ -16,37 +18,46 @@ import Simurgh.Syntax
 -- Convenient type synonym.
 type Type = Expr
 
-data Module = Module (TRec [ModuleItem])
+data Module = Module (Map String Entity)
             deriving (Generic, Show, Typeable)
--- FIXME: This is not the binding structure we want. The names should not bind
--- insides their types. (Altough they may bind inside the body.)
-data ModuleItem = Axiom (Name Expr) (Embed Type)
-                | Defn  (Name Expr) (Embed Type) (Embed Expr)
-                deriving (Generic, Show, Typeable)
+data Entity = Axiom Type
+            | Defn  Type {- ← ? -} Expr
+            deriving (Generic, Show, Typeable)
 
-instance Alpha Module
-instance Alpha ModuleItem
-instance Subst Expr Module
-instance Subst Expr ModuleItem
+-- A couple of convenient shortcuts.
+var = mkVar
+pi  = mkPi
 
-bindingTest = Module (trec [axA]) where
-    axA    = Axiom (string2Name "A") (Embed (mkPi [("_", App (mkVar "f") [mkVar "A"])]
-                                                  Set0))
-    trec p = TRec (bind (rec p) ())
+infixl 1 @@
+(@@) :: Expr -> Expr -> Expr
+App e₁ es @@ e₂ = App e₁ (es ++ [e₂])
+e₁        @@ e₂ = App e₁ [e₂]
 
-moduleTest = Module (trec [bool, true, false, bneg, band, bor]) where
+infixr 1 -->
+(-->) :: Type -> Type -> Type
+t₁ --> t₂    = pi [("_", t₁)] t₂
+-- t₁ --> Pi ts = Pi (bind (Cons (rebind ("_", t₁) ts))) -- Not that easy.
+
+bindingTest = Module (singleton "A" axA) where
+    axA = Axiom ((var "f" @@ mkVar "A") --> Set0)
+
+moduleTest = Module (fromAscList [("band",  band),
+                                  ("bneg",  bneg),
+                                  ("bool",  bool),
+                                  ("bor",   bor),
+                                  ("false", false),
+                                  ("true",  true)])
+  where
     -- axiom bool : Set
-    bool  = Axiom (string2Name "bool") (Embed Set0)
+    bool  = Axiom Set0
     -- axiom true : bool
-    true  = Axiom (string2Name "true") (Embed (mkVar "bool"))
+    true  = Axiom (var "bool")
     -- axiom false : bool
-    false = Axiom (string2Name "false") (Embed (mkVar "bool"))
+    false = Axiom (var "bool")
     -- axiom bneg : bool -> bool -> bool
-    bneg  = Axiom (string2Name "bneg") (Embed (mkPi [("_", mkVar "bool")] (mkVar "bool")))
+    bneg  = Axiom (var "bool" --> var "bool")
     -- axiom band : bool -> bool -> bool
-    band  = Axiom (string2Name "band") (Embed (mkPi [("_", mkVar "bool"),
-                                                     ("_", mkVar "bool")]
-                                                    (mkVar "bool")))
+    band  = Axiom (var "bool" --> var "bool" --> var "bool")
     -- def bor : bool -> bool -> bool
     --         := fun (x y : bool) => band (bneg x) (bneg y)
     --
@@ -55,12 +66,8 @@ moduleTest = Module (trec [bool, true, false, bneg, band, bor]) where
     --
     -- In a far future future:
     -- def bor x y := band (bneg x) (bneg y)
-    bor   = Defn  (string2Name "bor")
-                  (Embed (mkPi [("_", mkVar "bool"), ("_", mkVar "bool")]
-                               (mkVar "bool")))
-                  (Embed $ mkLam [("x", mkVar "bool"), ("y", mkVar "bool")]
-                                 (App (mkVar "band")
-                                      [App (mkVar "bneg") [mkVar "x"],
-                                       App (mkVar "bneg") [mkVar "y"]]))
-    trec p = TRec (bind (rec p) ())
+    bor   = Defn (var "bool" --> var "bool" --> var "bool")
+                 (mkLam [("x", var "bool"), ("y", var "bool")]
+                        (var "band" @@ (var "bneg" @@ var "x")
+                                    @@ (var "bneg" @@ var "y")))
 
