@@ -143,7 +143,6 @@ like to be headed.
 -   de Moura, L\. et al\. (2015). [The Lean Theorem Prover (system description)](https://leanprover.github.io/papers/system.pdf).
 -   Gratzer, D\. (2014). [Bidirectional Type Checkers for λ→ and λΠ](https://jozefg.bitbucket.io/posts/2014-11-22-bidir.html).
 -   Paulin-Mohring, C\. (2014). [Introduction to the Calculus of Inductive Constructions](https://hal.inria.fr/hal-01094195/).
--   Eisenberg, R\. A. (2018). [Stitch: The Sound Type-Indexed Type Checker](https://cs.brynmawr.edu/~rae/papers/2018/stitch/stitch.pdf).
 
 Also inspired by
 
